@@ -67,6 +67,8 @@ fun HomeScreen() {
 /** 一张菜谱卡片：颜色和字体都从主题里取，不再写死。 */
 @Composable
 fun RecipeCard(title: String, subtitle: String, meta: String, rating: String, modifier: Modifier = Modifier) {
+    // 份数的状态，提升到了卡片这一层
+    var servings by rememberSaveable { mutableStateOf(2) }
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
@@ -97,7 +99,7 @@ fun RecipeCard(title: String, subtitle: String, meta: String, rating: String, mo
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
-                ServingsStepper()
+                ServingsStepper(servings = servings, onServingsChange = { servings = it })
             }
             Text(text = "★ $rating", style = MaterialTheme.typography.labelLarge)
         }
@@ -105,15 +107,26 @@ fun RecipeCard(title: String, subtitle: String, meta: String, rating: String, mo
 }
 
 
-/** 份数加减器：rememberSaveable 让状态在旋转屏幕（Activity 重建）之后也活下来。 */
+/** 份数加减器：无状态。份数从外面传进来，点了以后，通过 onServingsChange 告诉外面。 */
 @Composable
-fun ServingsStepper() {
-    var servings by rememberSaveable { mutableStateOf(2) }
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        TextButton(onClick = { if (servings > 1) servings-- }) { Text("−") }
+fun ServingsStepper(servings: Int, onServingsChange: (Int) -> Unit, modifier: Modifier = Modifier) {
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+        TextButton(onClick = { if (servings > 1) onServingsChange(servings - 1) }) { Text("−") }
         Text(text = "$servings 人份", style = MaterialTheme.typography.bodyMedium)
-        TextButton(onClick = { servings++ }) { Text("+") }
+        TextButton(onClick = { onServingsChange(servings + 1) }) { Text("+") }
     }
+}
+
+@Preview(name = "加减器 · 1 人份", showBackground = true)
+@Composable
+fun ServingsStepperOnePreview() {
+    QiweiTheme { ServingsStepper(servings = 1, onServingsChange = {}) }
+}
+
+@Preview(name = "加减器 · 12 人份", showBackground = true)
+@Composable
+fun ServingsStepperManyPreview() {
+    QiweiTheme { ServingsStepper(servings = 12, onServingsChange = {}) }
 }
 
 @Preview(name = "浅色", showBackground = true)
