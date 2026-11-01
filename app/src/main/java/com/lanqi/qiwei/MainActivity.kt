@@ -20,8 +20,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             QiweiTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                    RecipeCard(
+                        title = "番茄炒蛋",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -30,18 +30,19 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/** 一张菜谱卡片：它只"描述"卡片长什么样，它本身不是卡片。 */
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun RecipeCard(title: String, modifier: Modifier = Modifier) {
     Text(
-        text = "Hello $name!",
+        text = title,
         modifier = modifier
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun RecipeCardPreview() {
     QiweiTheme {
-        Greeting("Android")
+        RecipeCard(title = "番茄炒蛋")
     }
 }
