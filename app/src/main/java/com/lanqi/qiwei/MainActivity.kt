@@ -39,7 +39,9 @@ fun RecipeCard(title: String, modifier: Modifier = Modifier) {
     )
 }
 
-@Preview(showBackground = true)
+@Preview(name = "普通", showBackground = true)
+@Preview(name = "大字体", showBackground = true, fontScale = 1.5f)
+@Preview(name = "窄屏", showBackground = true, widthDp = 120)
 @Composable
 fun RecipeCardPreview() {
     QiweiTheme {
