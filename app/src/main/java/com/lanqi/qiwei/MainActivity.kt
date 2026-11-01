@@ -22,6 +22,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     RecipeCard(
                         title = "番茄炒蛋",
+                        subtitle = "十分钟上桌的国民家常菜",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -32,9 +33,13 @@ class MainActivity : ComponentActivity() {
 
 /** 一张菜谱卡片：它只"描述"卡片长什么样，它本身不是卡片。 */
 @Composable
-fun RecipeCard(title: String, modifier: Modifier = Modifier) {
+fun RecipeCard(title: String, subtitle: String, modifier: Modifier = Modifier) {
     Text(
         text = title,
+        modifier = modifier
+    )
+    Text(
+        text = subtitle,
         modifier = modifier
     )
 }
@@ -45,6 +50,6 @@ fun RecipeCard(title: String, modifier: Modifier = Modifier) {
 @Composable
 fun RecipeCardPreview() {
     QiweiTheme {
-        RecipeCard(title = "番茄炒蛋")
+        RecipeCard(title = "番茄炒蛋", subtitle = "十分钟上桌的国民家常菜")
     }
 }
