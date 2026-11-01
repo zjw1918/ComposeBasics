@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -34,14 +35,10 @@ class MainActivity : ComponentActivity() {
 /** 一张菜谱卡片：它只"描述"卡片长什么样，它本身不是卡片。 */
 @Composable
 fun RecipeCard(title: String, subtitle: String, modifier: Modifier = Modifier) {
-    Text(
-        text = title,
-        modifier = modifier
-    )
-    Text(
-        text = subtitle,
-        modifier = modifier
-    )
+    Column(modifier = modifier) {
+        Text(text = title)
+        Text(text = subtitle)
+    }
 }
 
 @Preview(name = "普通", showBackground = true)
