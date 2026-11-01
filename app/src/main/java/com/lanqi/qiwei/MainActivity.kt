@@ -27,7 +27,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -105,10 +105,10 @@ fun RecipeCard(title: String, subtitle: String, meta: String, rating: String, mo
 }
 
 
-/** 份数加减器：remember 让状态在重组之间活下来。 */
+/** 份数加减器：rememberSaveable 让状态在旋转屏幕（Activity 重建）之后也活下来。 */
 @Composable
 fun ServingsStepper() {
-    var servings by remember { mutableStateOf(2) }
+    var servings by rememberSaveable { mutableStateOf(2) }
     Row(verticalAlignment = Alignment.CenterVertically) {
         TextButton(onClick = { if (servings > 1) servings-- }) { Text("−") }
         Text(text = "$servings 人份", style = MaterialTheme.typography.bodyMedium)
