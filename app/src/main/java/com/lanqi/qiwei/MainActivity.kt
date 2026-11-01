@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,21 +38,31 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             QiweiTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    RecipeCard(
-                        title = "番茄炒蛋",
-                        subtitle = "十分钟上桌的国民家常菜",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                HomeScreen()
             }
+        }
+    }
+}
+
+/** 首页：顶栏 + 几张菜谱卡片。 */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreen() {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = { TopAppBar(title = { Text("鳍味") }) }
+    ) { _ ->
+        Column(modifier = Modifier) {
+            RecipeCard(title = "番茄炒蛋", subtitle = "十分钟上桌的国民家常菜", meta = "10 分钟 · 简单", rating = "4.8")
+            RecipeCard(title = "可乐鸡翅", subtitle = "甜咸口，小朋友最爱", meta = "30 分钟 · 简单", rating = "4.7")
+            RecipeCard(title = "酸辣土豆丝", subtitle = "脆爽开胃的下饭菜", meta = "15 分钟 · 中等", rating = "4.6")
         }
     }
 }
 
 /** 一张菜谱卡片：它只"描述"卡片长什么样，它本身不是卡片。 */
 @Composable
-fun RecipeCard(title: String, subtitle: String, modifier: Modifier = Modifier) {
+fun RecipeCard(title: String, subtitle: String, meta: String, rating: String, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -72,9 +84,9 @@ fun RecipeCard(title: String, subtitle: String, modifier: Modifier = Modifier) {
             Text(text = title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(text = subtitle, fontSize = 14.sp, color = Color.Gray)
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = "10 分钟 · 简单", fontSize = 12.sp, color = Color(0xFF1B5FA8))
+            Text(text = meta, fontSize = 12.sp, color = Color(0xFF1B5FA8))
         }
-        Text(text = "★ 4.8", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+        Text(text = "★ $rating", fontSize = 14.sp, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -84,6 +96,6 @@ fun RecipeCard(title: String, subtitle: String, modifier: Modifier = Modifier) {
 @Composable
 fun RecipeCardPreview() {
     QiweiTheme {
-        RecipeCard(title = "番茄炒蛋", subtitle = "十分钟上桌的国民家常菜")
+        RecipeCard(title = "番茄炒蛋", subtitle = "十分钟上桌的国民家常菜", meta = "10 分钟 · 简单", rating = "4.8")
     }
 }
