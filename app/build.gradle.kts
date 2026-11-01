@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.composebasics"
+    namespace = "com.lanqi.qiwei"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.example.composebasics"
+        applicationId = "com.lanqi.qiwei"
         minSdk = 24
         targetSdk = 37
         versionCode = 1

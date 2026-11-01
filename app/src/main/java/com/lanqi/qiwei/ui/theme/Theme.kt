@@ -1,4 +1,4 @@
-package com.example.composebasics.ui.theme
+package com.lanqi.qiwei.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -34,7 +34,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun ComposeBasicsTheme(
+fun QiweiTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
