@@ -22,6 +22,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -92,9 +93,22 @@ fun RecipeCard(title: String, subtitle: String, meta: String, rating: String, mo
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
+                ServingsStepper()
             }
             Text(text = "★ $rating", style = MaterialTheme.typography.labelLarge)
         }
+    }
+}
+
+
+/** 份数加减器。翻车版：用普通变量记份数。 */
+@Composable
+fun ServingsStepper() {
+    var servings = 2
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        TextButton(onClick = { servings-- }) { Text("−") }
+        Text(text = "$servings 人份", style = MaterialTheme.typography.bodyMedium)
+        TextButton(onClick = { servings++ }) { Text("+") }
     }
 }
 
