@@ -1,5 +1,6 @@
 package com.lanqi.qiwei
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -97,12 +98,11 @@ fun RecipeCard(title: String, subtitle: String, meta: String, rating: String, mo
     }
 }
 
-@Preview(name = "普通", showBackground = true)
-@Preview(name = "大字体", showBackground = true, fontScale = 1.5f)
-@Preview(name = "窄屏", showBackground = true, widthDp = 120)
+@Preview(name = "浅色", showBackground = true)
+@Preview(name = "深色", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun RecipeCardPreview() {
+fun HomeScreenPreview() {
     QiweiTheme {
-        RecipeCard(title = "番茄炒蛋", subtitle = "十分钟上桌的国民家常菜", meta = "10 分钟 · 简单", rating = "4.8")
+        HomeScreen()
     }
 }
