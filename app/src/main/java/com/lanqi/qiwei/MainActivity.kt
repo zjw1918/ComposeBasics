@@ -16,8 +16,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -25,11 +26,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.lanqi.qiwei.ui.theme.QiweiTheme
 
 class MainActivity : ComponentActivity() {
@@ -51,8 +49,8 @@ fun HomeScreen() {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = { TopAppBar(title = { Text("鳍味") }) }
-    ) { _ ->
-        Column(modifier = Modifier) {
+    ) { innerPadding ->
+        Column(modifier = Modifier.padding(innerPadding)) {
             RecipeCard(title = "番茄炒蛋", subtitle = "十分钟上桌的国民家常菜", meta = "10 分钟 · 简单", rating = "4.8")
             RecipeCard(title = "可乐鸡翅", subtitle = "甜咸口，小朋友最爱", meta = "30 分钟 · 简单", rating = "4.7")
             RecipeCard(title = "酸辣土豆丝", subtitle = "脆爽开胃的下饭菜", meta = "15 分钟 · 中等", rating = "4.6")
@@ -60,33 +58,42 @@ fun HomeScreen() {
     }
 }
 
-/** 一张菜谱卡片：它只"描述"卡片长什么样，它本身不是卡片。 */
+/** 一张菜谱卡片：颜色和字体都从主题里取，不再写死。 */
 @Composable
 fun RecipeCard(title: String, subtitle: String, meta: String, rating: String, modifier: Modifier = Modifier) {
-    Row(
+    ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp) // 外边距：卡片和屏幕边缘之间
-            .clip(RoundedCornerShape(16.dp))              // 先裁成圆角……
-            .background(Color(0xFFFFF4E6))                // ……再在圆角里涂底色
-            .padding(16.dp),                              // 内边距：底色和内容之间
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        // 盘子：先用一个圆形色块占位，第 11 期换成真图片
-        Box(
-            modifier = Modifier
-                .size(64.dp)
-                .clip(CircleShape)
-                .background(Color(0xFFF4A261))
-        )
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Text(text = subtitle, fontSize = 14.sp, color = Color.Gray)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = meta, fontSize = 12.sp, color = Color(0xFF1B5FA8))
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            // 盘子：先用一个圆形色块占位，第 11 期换成真图片
+            Box(
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.secondaryContainer)
+            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = title, style = MaterialTheme.typography.titleLarge)
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = meta,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            Text(text = "★ $rating", style = MaterialTheme.typography.labelLarge)
         }
-        Text(text = "★ $rating", fontSize = 14.sp, fontWeight = FontWeight.Bold)
     }
 }
 
