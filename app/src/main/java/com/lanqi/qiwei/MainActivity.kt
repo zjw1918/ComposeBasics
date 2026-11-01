@@ -25,7 +25,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -102,14 +105,14 @@ fun RecipeCard(title: String, subtitle: String, meta: String, rating: String, mo
 }
 
 
-/** 份数加减器。翻车版：份数是可观察的状态了，但没有 remember。 */
+/** 份数加减器：remember 让状态在重组之间活下来。 */
 @Composable
 fun ServingsStepper() {
-    val servings = mutableStateOf(2)
+    var servings by remember { mutableStateOf(2) }
     Row(verticalAlignment = Alignment.CenterVertically) {
-        TextButton(onClick = { servings.value-- }) { Text("−") }
-        Text(text = "${servings.value} 人份", style = MaterialTheme.typography.bodyMedium)
-        TextButton(onClick = { servings.value++ }) { Text("+") }
+        TextButton(onClick = { if (servings > 1) servings-- }) { Text("−") }
+        Text(text = "$servings 人份", style = MaterialTheme.typography.bodyMedium)
+        TextButton(onClick = { servings++ }) { Text("+") }
     }
 }
 
