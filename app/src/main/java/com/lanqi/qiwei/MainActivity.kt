@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -48,7 +50,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-/** 首页：顶栏 + 几张菜谱卡片。 */
+/** 首页：顶栏 + 菜谱列表。 */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
@@ -56,17 +58,21 @@ fun HomeScreen() {
         modifier = Modifier.fillMaxSize(),
         topBar = { TopAppBar(title = { Text("鳍味") }) }
     ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            RecipeCard(title = "番茄炒蛋", subtitle = "十分钟上桌的国民家常菜", meta = "10 分钟 · 简单", rating = "4.8")
-            RecipeCard(title = "可乐鸡翅", subtitle = "甜咸口，小朋友最爱", meta = "30 分钟 · 简单", rating = "4.7")
-            RecipeCard(title = "酸辣土豆丝", subtitle = "脆爽开胃的下饭菜", meta = "15 分钟 · 中等", rating = "4.6")
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
+        ) {
+            sampleRecipes.forEach { recipe ->
+                RecipeCard(recipe = recipe)
+            }
         }
     }
 }
 
-/** 一张菜谱卡片：颜色和字体都从主题里取，不再写死。 */
+/** 一张菜谱卡片：拿到一道菜的数据，描述它长什么样。 */
 @Composable
-fun RecipeCard(title: String, subtitle: String, meta: String, rating: String, modifier: Modifier = Modifier) {
+fun RecipeCard(recipe: Recipe, modifier: Modifier = Modifier) {
     // 份数的状态，提升到了卡片这一层
     var servings by rememberSaveable { mutableStateOf(2) }
     ElevatedCard(
@@ -87,21 +93,21 @@ fun RecipeCard(title: String, subtitle: String, meta: String, rating: String, mo
                     .background(MaterialTheme.colorScheme.secondaryContainer)
             )
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = title, style = MaterialTheme.typography.titleLarge)
+                Text(text = recipe.title, style = MaterialTheme.typography.titleLarge)
                 Text(
-                    text = subtitle,
+                    text = recipe.subtitle,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = meta,
+                    text = "${recipe.minutes} 分钟 · ${recipe.difficulty}",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
                 ServingsStepper(servings = servings, onServingsChange = { servings = it })
             }
-            Text(text = "★ $rating", style = MaterialTheme.typography.labelLarge)
+            Text(text = "★ ${recipe.rating}", style = MaterialTheme.typography.labelLarge)
         }
     }
 }
