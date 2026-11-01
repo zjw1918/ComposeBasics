@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -51,12 +52,15 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-/** 首页：搜索框 + 菜谱列表。搜索词这个状态，放在首页这一层。 */
+/** 首页：搜索框 + 分类 + 菜谱列表。两个状态都放在首页这一层：状态往下传，事件往上传。 */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
     var query by rememberSaveable { mutableStateOf("") }
-    val shown = sampleRecipes.filter { it.title.contains(query) }
+    var category by rememberSaveable { mutableStateOf("全部") }
+    val shown = sampleRecipes.filter {
+        it.title.contains(query) && (category == "全部" || it.category == category)
+    }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = { TopAppBar(title = { Text("鳍味") }) }
@@ -67,6 +71,7 @@ fun HomeScreen() {
                 .verticalScroll(rememberScrollState())
         ) {
             SearchBox(query = query, onQueryChange = { query = it })
+            CategoryChips(selected = category, onSelect = { category = it })
             shown.forEach { recipe ->
                 RecipeCard(recipe = recipe)
             }
@@ -86,6 +91,23 @@ fun SearchBox(query: String, onQueryChange: (String) -> Unit, modifier: Modifier
         placeholder = { Text("搜菜名，比如：番茄") },
         singleLine = true,
     )
+}
+
+/** 分类筛选：无状态。哪个被选中由 selected 决定，点击时通过 onSelect 告诉外面。 */
+@Composable
+fun CategoryChips(selected: String, onSelect: (String) -> Unit, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier.padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        categories.forEach { name ->
+            FilterChip(
+                selected = name == selected,
+                onClick = { onSelect(name) },
+                label = { Text(name) }
+            )
+        }
+    }
 }
 
 /** 一张菜谱卡片：拿到一道菜的数据，描述它长什么样。 */
