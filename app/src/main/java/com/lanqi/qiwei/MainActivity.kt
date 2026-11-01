@@ -9,7 +9,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -50,9 +53,11 @@ class MainActivity : ComponentActivity() {
 fun RecipeCard(title: String, subtitle: String, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
-            .background(Color(0xFFFFF4E6))
-            .clip(RoundedCornerShape(16.dp))
-            .padding(16.dp),
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp) // 外边距：卡片和屏幕边缘之间
+            .clip(RoundedCornerShape(16.dp))              // 先裁成圆角……
+            .background(Color(0xFFFFF4E6))                // ……再在圆角里涂底色
+            .padding(16.dp),                              // 内边距：底色和内容之间
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -63,10 +68,13 @@ fun RecipeCard(title: String, subtitle: String, modifier: Modifier = Modifier) {
                 .clip(CircleShape)
                 .background(Color(0xFFF4A261))
         )
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(text = title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(text = subtitle, fontSize = 14.sp, color = Color.Gray)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = "10 分钟 · 简单", fontSize = 12.sp, color = Color(0xFF1B5FA8))
         }
+        Text(text = "★ 4.8", fontSize = 14.sp, fontWeight = FontWeight.Bold)
     }
 }
 
