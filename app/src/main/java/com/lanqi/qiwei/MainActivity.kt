@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
 fun RecipeCard(title: String, subtitle: String, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
-            .fillMaxWidth()
+            .fillMaxSize()                                // 翻车：本来是 fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp) // 外边距：卡片和屏幕边缘之间
             .clip(RoundedCornerShape(16.dp))              // 先裁成圆角……
             .background(Color(0xFFFFF4E6))                // ……再在圆角里涂底色
