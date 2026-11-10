@@ -6,6 +6,9 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -16,7 +19,8 @@ enum class ThemeMode(val label: String) { SYSTEM("跟随系统"), LIGHT("浅色"
 private val Context.settingsStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 /** 设置：几个小小的键值，用 DataStore 存在手机上。杀掉 App 再打开，还在。 */
-class SettingsRepository(private val context: Context) {
+@Singleton
+class SettingsRepository @Inject constructor(@ApplicationContext private val context: Context) {
     private val themeKey = stringPreferencesKey("theme")
 
     /** 读：一条流。设置一改，流里马上来一个新值 */

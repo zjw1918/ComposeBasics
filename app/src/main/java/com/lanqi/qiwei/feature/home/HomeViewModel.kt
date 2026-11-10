@@ -10,7 +10,9 @@ import androidx.lifecycle.viewModelScope
 import com.lanqi.qiwei.data.FavoritesRepository
 import com.lanqi.qiwei.data.RecipeRepository
 import com.lanqi.qiwei.model.Recipe
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.IOException
+import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,7 +39,8 @@ data class HomeUiState(
 )
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-class HomeViewModel(
+@HiltViewModel
+class HomeViewModel @Inject constructor(
     private val repository: RecipeRepository,
     private val favorites: FavoritesRepository,
 ) : ViewModel() {

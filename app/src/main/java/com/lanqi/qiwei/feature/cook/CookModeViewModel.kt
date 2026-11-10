@@ -5,6 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lanqi.qiwei.data.RecipeRepository
 import com.lanqi.qiwei.model.Recipe
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.IOException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -30,7 +34,11 @@ sealed interface CookUiState {
 }
 
 /** 做饭模式的 ViewModel。计时器都在 viewModelScope 里跑：离开做饭模式，它们一起停。 */
-class CookModeViewModel(recipeId: Int, repository: RecipeRepository) : ViewModel() {
+@HiltViewModel(assistedFactory = CookModeViewModel.Factory::class)
+class CookModeViewModel @AssistedInject constructor(
+    @Assisted recipeId: Int,
+    repository: RecipeRepository,
+) : ViewModel() {
     private val _uiState = MutableStateFlow<CookUiState>(CookUiState.Loading)
     val uiState: StateFlow<CookUiState> = _uiState.asStateFlow()
 
@@ -83,6 +91,11 @@ class CookModeViewModel(recipeId: Int, repository: RecipeRepository) : ViewModel
 
     private fun updateCooking(change: (CookUiState.Cooking) -> CookUiState.Cooking) {
         _uiState.update { state -> if (state is CookUiState.Cooking) change(state) else state }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(recipeId: Int): CookModeViewModel
     }
 
     override fun onCleared() {

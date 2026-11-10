@@ -33,13 +33,16 @@ import androidx.lifecycle.viewModelScope
 import coil3.compose.AsyncImage
 import com.lanqi.qiwei.data.FavoriteEntity
 import com.lanqi.qiwei.data.FavoritesRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /** 收藏页的 ViewModel：把数据库的 Flow 接成 StateFlow，界面一订阅就有最新的列表。 */
-class FavoritesViewModel(private val repository: FavoritesRepository) : ViewModel() {
+@HiltViewModel
+class FavoritesViewModel @Inject constructor(private val repository: FavoritesRepository) : ViewModel() {
     val favorites: StateFlow<List<FavoriteEntity>> = repository.favorites
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 

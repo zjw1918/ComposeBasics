@@ -15,19 +15,34 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
 import com.lanqi.qiwei.data.SettingsRepository
 import com.lanqi.qiwei.data.ThemeMode
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+
+@HiltViewModel
+class SettingsViewModel @Inject constructor(private val settings: SettingsRepository) : ViewModel() {
+    val themeMode: StateFlow<ThemeMode> = settings.themeMode
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ThemeMode.SYSTEM)
+
+    fun setThemeMode(mode: ThemeMode) {
+        viewModelScope.launch { settings.setThemeMode(mode) }
+    }
+}
 
 /** 设置页：选主题。选中哪个，由 DataStore 里存的值决定。 */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(settings: SettingsRepository, onBack: () -> Unit) {
-    val current by settings.themeMode.collectAsStateWithLifecycle(initialValue = ThemeMode.SYSTEM)
-    val scope = rememberCoroutineScope()
+fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit) {
+    val current by viewModel.themeMode.collectAsStateWithLifecycle()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -43,9 +58,7 @@ fun SettingsScreen(settings: SettingsRepository, onBack: () -> Unit) {
                 ListItem(
                     headlineContent = { Text(mode.label) },
                     leadingContent = { RadioButton(selected = mode == current, onClick = null) },
-                    modifier = Modifier.selectable(selected = mode == current) {
-                        scope.launch { settings.setThemeMode(mode) }
-                    }
+                    modifier = Modifier.selectable(selected = mode == current) { viewModel.setThemeMode(mode) }
                 )
             }
         }

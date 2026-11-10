@@ -8,6 +8,10 @@ import com.lanqi.qiwei.data.FavoritesRepository
 import com.lanqi.qiwei.data.RecipeRepository
 import com.lanqi.qiwei.model.Ingredient
 import com.lanqi.qiwei.model.Recipe
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.IOException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,8 +33,10 @@ sealed interface DetailUiState {
 }
 
 /** 详情页的值班经理：屏幕旋转时不下班，离开这一页才下班。 */
-class RecipeDetailViewModel(
-    private val recipeId: Int,
+@HiltViewModel(assistedFactory = RecipeDetailViewModel.Factory::class)
+class RecipeDetailViewModel @AssistedInject constructor(
+    // 菜的 id 来自导航（路由键），Hilt 不知道：开店时登记不了，只能在用的时候「现场填」
+    @Assisted private val recipeId: Int,
     private val repository: RecipeRepository,
     private val favorites: FavoritesRepository,
     // SavedStateHandle：系统帮忙保管的一小块状态，App 在后台被杀掉再回来，也还在
@@ -82,6 +88,12 @@ class RecipeDetailViewModel(
     /** 界面上点了加减：存进 SavedStateHandle，上面的 combine 自己就会算出新状态 */
     fun setServings(servings: Int) {
         if (servings >= 1) savedStateHandle["servings"] = servings
+    }
+
+    /** 现场填 id 的那张表：Hilt 生成它的实现，其余参数自动注入 */
+    @AssistedFactory
+    interface Factory {
+        fun create(recipeId: Int): RecipeDetailViewModel
     }
 
     override fun onCleared() {

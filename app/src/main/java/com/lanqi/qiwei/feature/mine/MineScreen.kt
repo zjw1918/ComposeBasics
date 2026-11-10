@@ -32,12 +32,15 @@ import androidx.lifecycle.viewModelScope
 import com.lanqi.qiwei.data.MyRecipeEntity
 import com.lanqi.qiwei.data.MyRecipesRepository
 import com.lanqi.qiwei.ui.components.SectionTitle
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class MineViewModel(private val repository: MyRecipesRepository) : ViewModel() {
+@HiltViewModel
+class MineViewModel @Inject constructor(private val repository: MyRecipesRepository) : ViewModel() {
     val recipes: StateFlow<List<MyRecipeEntity>> = repository.recipes
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 

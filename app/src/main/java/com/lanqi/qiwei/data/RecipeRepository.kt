@@ -1,9 +1,11 @@
 package com.lanqi.qiwei.data
 
-import com.lanqi.qiwei.BASE_URL
+import com.lanqi.qiwei.di.BASE_URL
 import com.lanqi.qiwei.model.Ingredient
 import com.lanqi.qiwei.model.Recipe
 import java.io.IOException
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
@@ -18,7 +20,8 @@ import kotlinx.serialization.json.Json
  * - 网络只负责把新数据写进数据库（refresh 开头的函数）。
  * 数据只有一个来源：数据库。网络通不通，界面都有东西可看。
  */
-class RecipeRepository(private val api: QiweiApi, private val dao: RecipeDao) {
+@Singleton
+class RecipeRepository @Inject constructor(private val api: QiweiApi, private val dao: RecipeDao) {
 
     fun observeRecipes(query: String): Flow<List<Recipe>> =
         dao.search(query).map { list -> list.map { it.toRecipe() } }

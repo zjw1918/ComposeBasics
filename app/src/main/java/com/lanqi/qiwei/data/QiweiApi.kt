@@ -1,6 +1,6 @@
 package com.lanqi.qiwei.data
 
-import com.lanqi.qiwei.BASE_URL
+import com.lanqi.qiwei.di.BASE_URL
 import com.lanqi.qiwei.model.Ingredient
 import com.lanqi.qiwei.model.Recipe
 import kotlinx.serialization.Serializable

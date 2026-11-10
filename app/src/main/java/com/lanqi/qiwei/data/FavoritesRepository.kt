@@ -1,11 +1,14 @@
 package com.lanqi.qiwei.data
 
 import com.lanqi.qiwei.model.Recipe
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 /** 收藏仓库：收藏只存在手机上（冷库），不经过网络。 */
-class FavoritesRepository(private val dao: FavoriteDao) {
+@Singleton
+class FavoritesRepository @Inject constructor(private val dao: FavoriteDao) {
     val favorites: Flow<List<FavoriteEntity>> = dao.observeAll()
 
     /** 收藏了哪些菜（只要 id）：首页的心形用它 */

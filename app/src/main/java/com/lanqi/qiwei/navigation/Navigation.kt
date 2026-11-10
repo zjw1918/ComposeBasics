@@ -24,27 +24,22 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.lifecycle.createSavedStateHandle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.lanqi.qiwei.appContainer
 import com.lanqi.qiwei.feature.cook.CookModeScreen
 import com.lanqi.qiwei.feature.cook.CookModeViewModel
 import com.lanqi.qiwei.feature.detail.DetailScreen
 import com.lanqi.qiwei.feature.detail.RecipeDetailViewModel
 import com.lanqi.qiwei.feature.favorites.FavoritesScreen
-import com.lanqi.qiwei.feature.favorites.FavoritesViewModel
 import com.lanqi.qiwei.feature.home.HomeScreen
-import com.lanqi.qiwei.feature.home.HomeViewModel
 import com.lanqi.qiwei.feature.mine.EditorScreen
 import com.lanqi.qiwei.feature.mine.EditorViewModel
 import com.lanqi.qiwei.feature.mine.MineScreen
-import com.lanqi.qiwei.feature.mine.MineViewModel
 import com.lanqi.qiwei.feature.settings.SettingsScreen
 import kotlinx.serialization.Serializable
 
@@ -88,7 +83,6 @@ fun QiweiNavigation() {
         Tab.MINE to rememberNavBackStack(Mine),
     )
     var tab by rememberSaveable { mutableStateOf(Tab.HOME) }
-    val container = appContainer()
     val backStack = stacks.getValue(tab)
 
     // 在别的标签的根页面按返回：先回到首页标签，而不是直接退出
@@ -127,17 +121,15 @@ fun QiweiNavigation() {
             entryProvider = entryProvider {
                 entry<Home> {
                     HomeScreen(
-                        viewModel = viewModel { HomeViewModel(container.recipeRepository, container.favoritesRepository) },
+                        viewModel = hiltViewModel(),
                         onOpenRecipe = { id -> backStack.add(Detail(id)) }
                     )
                 }
                 entry<Detail> { key ->
-                    // 每个详情页条目一个 ViewModel：条目在返回栈里，它就在；条目被弹出，它才下班
-                    val viewModel = viewModel {
-                        RecipeDetailViewModel(
-                            key.recipeId, container.recipeRepository, container.favoritesRepository, createSavedStateHandle()
-                        )
-                    }
+                    // 每个详情页条目一个 ViewModel：条目在返回栈里，它就在；条目被弹出，它才下班。Hilt 负责造它
+                    val viewModel = hiltViewModel<RecipeDetailViewModel, RecipeDetailViewModel.Factory>(
+                        creationCallback = { factory -> factory.create(key.recipeId) }
+                    )
                     DetailScreen(
                         viewModel = viewModel,
                         onCook = { backStack.add(Cook(key.recipeId)) },
@@ -145,18 +137,20 @@ fun QiweiNavigation() {
                     )
                 }
                 entry<Cook> { key ->
-                    val viewModel = viewModel { CookModeViewModel(key.recipeId, container.recipeRepository) }
+                    val viewModel = hiltViewModel<CookModeViewModel, CookModeViewModel.Factory>(
+                        creationCallback = { factory -> factory.create(key.recipeId) }
+                    )
                     CookModeScreen(viewModel = viewModel, onClose = { backStack.removeLastOrNull() })
                 }
                 entry<Favorites> {
                     FavoritesScreen(
-                        viewModel = viewModel { FavoritesViewModel(container.favoritesRepository) },
+                        viewModel = hiltViewModel(),
                         onOpenRecipe = { id -> backStack.add(Detail(id)) }
                     )
                 }
                 entry<Mine> {
                     MineScreen(
-                        viewModel = viewModel { MineViewModel(container.myRecipesRepository) },
+                        viewModel = hiltViewModel(),
                         onNewRecipe = { backStack.add(Editor()) },
                         onEditRecipe = { id -> backStack.add(Editor(id)) },
                         onOpenSettings = { backStack.add(Settings) }
@@ -164,13 +158,15 @@ fun QiweiNavigation() {
                 }
                 entry<Editor> { key ->
                     EditorScreen(
-                        viewModel = viewModel { EditorViewModel(key.myRecipeId, container.myRecipesRepository) },
+                        viewModel = hiltViewModel<EditorViewModel, EditorViewModel.Factory>(
+                            creationCallback = { factory -> factory.create(key.myRecipeId) }
+                        ),
                         isNew = key.myRecipeId == null,
                         onDone = { backStack.removeLastOrNull() }
                     )
                 }
                 entry<Settings> {
-                    SettingsScreen(settings = container.settingsRepository, onBack = { backStack.removeLastOrNull() })
+                    SettingsScreen(viewModel = hiltViewModel(), onBack = { backStack.removeLastOrNull() })
                 }
             }
         )

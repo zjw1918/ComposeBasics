@@ -2,11 +2,14 @@ package com.lanqi.qiwei.data
 
 import android.util.Log
 import java.io.IOException
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import retrofit2.HttpException
 
 /** 我的菜谱：存在本机数据库里；每次保存后，顺手往后端备份一份。 */
-class MyRecipesRepository(private val dao: MyRecipeDao, private val api: QiweiApi) {
+@Singleton
+class MyRecipesRepository @Inject constructor(private val dao: MyRecipeDao, private val api: QiweiApi) {
     val recipes: Flow<List<MyRecipeEntity>> = dao.observeAll()
 
     suspend fun get(id: Long): MyRecipeEntity? = dao.get(id)

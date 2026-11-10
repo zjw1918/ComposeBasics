@@ -7,6 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lanqi.qiwei.data.MyRecipeEntity
 import com.lanqi.qiwei.data.MyRecipesRepository
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 
 /** 表单里的四个格子。 */
@@ -18,7 +22,16 @@ data class EditorForm(
 )
 
 /** 编辑页的 ViewModel：表单放在这里——旋转屏幕不丢，界面只管显示和转告输入。 */
-class EditorViewModel(private val recipeId: Long?, private val repository: MyRecipesRepository) : ViewModel() {
+@HiltViewModel(assistedFactory = EditorViewModel.Factory::class)
+class EditorViewModel @AssistedInject constructor(
+    @Assisted private val recipeId: Long?,
+    private val repository: MyRecipesRepository,
+) : ViewModel() {
+    @AssistedFactory
+    interface Factory {
+        fun create(recipeId: Long?): EditorViewModel
+    }
+
     var form by mutableStateOf(EditorForm())
         private set
 
