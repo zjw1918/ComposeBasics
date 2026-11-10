@@ -25,7 +25,7 @@ sealed interface CookUiState {
 }
 
 /** 做饭模式的 ViewModel。计时器都在 viewModelScope 里跑：离开做饭模式，它们一起停。 */
-class CookModeViewModel(recipeId: Int) : ViewModel() {
+class CookModeViewModel(recipeId: Int, repository: RecipeRepository) : ViewModel() {
     private val _uiState = MutableStateFlow<CookUiState>(CookUiState.Loading)
     val uiState: StateFlow<CookUiState> = _uiState.asStateFlow()
 
@@ -34,7 +34,7 @@ class CookModeViewModel(recipeId: Int) : ViewModel() {
 
     init {
         viewModelScope.launch {
-            _uiState.value = CookUiState.Cooking(RecipeRepository.recipe(recipeId), step = 0)
+            _uiState.value = CookUiState.Cooking(repository.recipe(recipeId), step = 0)
         }
     }
 

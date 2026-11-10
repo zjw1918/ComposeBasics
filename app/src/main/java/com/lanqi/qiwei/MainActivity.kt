@@ -47,7 +47,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lanqi.qiwei.ui.theme.QiweiTheme
 
 class MainActivity : ComponentActivity() {
@@ -62,13 +61,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-/** 5000 道菜（示例数据，第 11 期换成从后端取）。 */
-val allRecipes = generateRecipes(5000)
-
 /** 首页：搜索框 + 分类 + 菜谱列表。两个状态都放在首页这一层：状态往下传，事件往上传。 */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(onOpenRecipe: (Int) -> Unit, viewModel: HomeViewModel = viewModel()) {
+fun HomeScreen(viewModel: HomeViewModel, onOpenRecipe: (Int) -> Unit) {
     val recipes by viewModel.recipes.collectAsStateWithLifecycle()
     var query by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf("全部") }
@@ -230,8 +226,8 @@ fun ServingsStepperManyPreview() {
 @Preview(name = "浅色", showBackground = true)
 @Preview(name = "深色", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun HomeScreenPreview() {
+fun RecipeCardPreview() {
     QiweiTheme {
-        HomeScreen(onOpenRecipe = {})
+        RecipeCard(recipe = sampleRecipes.first(), onClick = {}, onHide = {})
     }
 }

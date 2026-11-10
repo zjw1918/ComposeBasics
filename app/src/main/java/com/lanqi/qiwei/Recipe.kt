@@ -12,6 +12,7 @@ data class Recipe(
     /** 两人份的用量 */
     val ingredients: List<Ingredient> = emptyList(),
     val steps: List<String> = emptyList(),
+    val imageUrl: String = "",
 )
 
 /** 一样食材：名字、两人份的用量、单位。 */
@@ -21,7 +22,7 @@ val categories = listOf("全部", "家常", "快手", "汤", "硬菜")
 
 private fun i(name: String, amount: Double, unit: String) = Ingredient(name, amount, unit)
 
-/** 示例数据：第 11 期换成从后端取。 */
+/** 示例数据：只给预览用。真正的数据从鳍味后端取（第 11 期起）。 */
 val sampleRecipes = listOf(
     Recipe(
         1, "番茄炒蛋", "十分钟上桌的国民家常菜", "家常", 10, "简单", 4.8,

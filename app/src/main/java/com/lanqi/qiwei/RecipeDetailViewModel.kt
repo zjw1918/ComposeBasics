@@ -23,6 +23,7 @@ sealed interface DetailUiState {
 /** 详情页的值班经理：屏幕旋转时不下班，离开这一页才下班。 */
 class RecipeDetailViewModel(
     private val recipeId: Int,
+    private val repository: RecipeRepository,
     // SavedStateHandle：系统帮忙保管的一小块状态，App 在后台被杀掉再回来，也还在
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -33,7 +34,7 @@ class RecipeDetailViewModel(
     init {
         Log.d("Qiwei", "详情 ViewModel 上班：菜 #$recipeId")
         viewModelScope.launch {
-            val recipe = RecipeRepository.recipe(recipeId)
+            val recipe = repository.recipe(recipeId)
             _uiState.value = DetailUiState.Success(recipe, servings = savedStateHandle["servings"] ?: 2)
         }
     }

@@ -64,6 +64,7 @@ fun QiweiNavigation() {
         Tab.MINE to rememberNavBackStack(Mine),
     )
     var tab by rememberSaveable { mutableStateOf(Tab.HOME) }
+    val container = appContainer()
     val backStack = stacks.getValue(tab)
 
     // 在别的标签的根页面按返回：先回到首页标签，而不是直接退出
@@ -96,11 +97,16 @@ fun QiweiNavigation() {
             ),
             entryProvider = entryProvider {
                 entry<Home> {
-                    HomeScreen(onOpenRecipe = { id -> backStack.add(Detail(id)) })
+                    HomeScreen(
+                        viewModel = viewModel { HomeViewModel(container.recipeRepository) },
+                        onOpenRecipe = { id -> backStack.add(Detail(id)) }
+                    )
                 }
                 entry<Detail> { key ->
                     // 每个详情页条目一个 ViewModel：条目在返回栈里，它就在；条目被弹出，它才下班
-                    val viewModel = viewModel { RecipeDetailViewModel(key.recipeId, createSavedStateHandle()) }
+                    val viewModel = viewModel {
+                        RecipeDetailViewModel(key.recipeId, container.recipeRepository, createSavedStateHandle())
+                    }
                     DetailScreen(
                         viewModel = viewModel,
                         onCook = { backStack.add(Cook(key.recipeId)) },
@@ -108,7 +114,7 @@ fun QiweiNavigation() {
                     )
                 }
                 entry<Cook> { key ->
-                    val viewModel = viewModel { CookModeViewModel(key.recipeId) }
+                    val viewModel = viewModel { CookModeViewModel(key.recipeId, container.recipeRepository) }
                     CookModeScreen(viewModel = viewModel, onClose = { backStack.removeLastOrNull() })
                 }
                 entry<Favorites> { FavoritesScreen() }
