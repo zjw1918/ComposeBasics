@@ -2,6 +2,7 @@ package com.lanqi.qiwei
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -52,6 +53,7 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
+    Log.d("Recompose", "HomeScreen")
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = { TopAppBar(title = { Text("鳍味") }) }
@@ -67,6 +69,7 @@ fun HomeScreen() {
 /** 一张菜谱卡片：颜色和字体都从主题里取，不再写死。 */
 @Composable
 fun RecipeCard(title: String, subtitle: String, meta: String, rating: String, modifier: Modifier = Modifier) {
+    Log.d("Recompose", "  RecipeCard($title)")
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
@@ -109,6 +112,7 @@ fun RecipeCard(title: String, subtitle: String, meta: String, rating: String, mo
 @Composable
 fun ServingsStepper() {
     var servings by rememberSaveable { mutableStateOf(2) }
+    Log.d("Recompose", "    ServingsStepper: $servings 人份")
     Row(verticalAlignment = Alignment.CenterVertically) {
         TextButton(onClick = { if (servings > 1) servings-- }) { Text("−") }
         Text(text = "$servings 人份", style = MaterialTheme.typography.bodyMedium)
