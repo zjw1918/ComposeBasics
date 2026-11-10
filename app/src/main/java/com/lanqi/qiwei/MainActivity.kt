@@ -69,13 +69,12 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun HomeScreen(viewModel: HomeViewModel, onOpenRecipe: (Int) -> Unit) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var query by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf("全部") }
     // 点了「不感兴趣」的菜
     val hidden = remember { mutableStateListOf<Int>() }
     val recipes = (uiState as? HomeUiState.Success)?.recipes.orEmpty()
     val shown = recipes.filter {
-        it.id !in hidden && it.title.contains(query) && (category == "全部" || it.category == category)
+        it.id !in hidden && (category == "全部" || it.category == category)
     }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -86,7 +85,7 @@ fun HomeScreen(viewModel: HomeViewModel, onOpenRecipe: (Int) -> Unit) {
             // 粘性标题：滑动时，搜索框和分类一直停在顶上
             stickyHeader(key = "header", contentType = "header") {
                 Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-                    SearchBox(query = query, onQueryChange = { query = it })
+                    SearchBox(query = viewModel.query, onQueryChange = viewModel::onQueryChange)
                     CategoryChips(selected = category, onSelect = { category = it })
                     Text(
                         text = "共 ${shown.size} 道",

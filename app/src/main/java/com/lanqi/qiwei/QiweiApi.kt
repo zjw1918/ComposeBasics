@@ -7,6 +7,7 @@ import retrofit2.http.Query
 
 /** 鳍味后端的接口：每个函数对应一个网址。Retrofit 照着这个接口，生成真正发请求的代码。 */
 interface QiweiApi {
+    /** 菜谱列表；query 不为空时，只返回菜名里有这几个字的 */
     @GET("recipes")
     suspend fun recipes(@Query("query") query: String = "", @Query("category") category: String = ""): List<RecipeSummaryDto>
 
