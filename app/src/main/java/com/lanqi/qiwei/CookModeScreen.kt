@@ -49,6 +49,9 @@ fun CookModeScreen(viewModel: CookModeViewModel, onClose: () -> Unit) {
         CookUiState.Loading -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
+        is CookUiState.Error -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(state.message, color = MaterialTheme.colorScheme.error)
+        }
         is CookUiState.Cooking -> CookingContent(
             state = state,
             onGoTo = viewModel::goTo,

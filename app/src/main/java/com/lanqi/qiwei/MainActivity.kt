@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -65,12 +66,13 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: HomeViewModel, onOpenRecipe: (Int) -> Unit) {
-    val recipes by viewModel.recipes.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var query by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf("全部") }
     // 点了「不感兴趣」的菜
     val hidden = remember { mutableStateListOf<Int>() }
-    val shown = recipes.orEmpty().filter {
+    val recipes = (uiState as? HomeUiState.Success)?.recipes.orEmpty()
+    val shown = recipes.filter {
         it.id !in hidden && it.title.contains(query) && (category == "全部" || it.category == category)
     }
     Scaffold(
@@ -92,13 +94,17 @@ fun HomeScreen(viewModel: HomeViewModel, onOpenRecipe: (Int) -> Unit) {
                     )
                 }
             }
-            // 还在排序：转个圈
-            if (recipes == null) {
-                item(key = "loading") {
+            // 在取：转个圈；出错：说清楚原因，给一个重试按钮
+            when (val state = uiState) {
+                HomeUiState.Loading -> item(key = "loading") {
                     Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
                 }
+                is HomeUiState.Error -> item(key = "error") {
+                    ErrorMessage(message = state.message, onRetry = viewModel::load)
+                }
+                is HomeUiState.Success -> Unit
             }
             // key：每一项的身份是菜的 id，不是它排第几；contentType：同一种卡片才互相复用
             items(shown, key = { it.id }, contentType = { "recipe" }) { recipe ->
@@ -109,6 +115,19 @@ fun HomeScreen(viewModel: HomeViewModel, onOpenRecipe: (Int) -> Unit) {
                 )
             }
         }
+    }
+}
+
+/** 出错时的提示：一句人话 + 重试按钮。 */
+@Composable
+fun ErrorMessage(message: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxWidth().padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(message, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.error)
+        Spacer(modifier = Modifier.height(12.dp))
+        Button(onClick = onRetry) { Text("重试") }
     }
 }
 

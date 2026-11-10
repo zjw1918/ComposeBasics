@@ -10,12 +10,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 
 /** 一个计时器：属于第几步、还剩几秒、正在走还是停着。 */
 data class CookTimer(val secondsLeft: Int, val running: Boolean)
 
 sealed interface CookUiState {
     data object Loading : CookUiState
+    data class Error(val message: String) : CookUiState
     data class Cooking(
         val recipe: Recipe,
         val step: Int,
@@ -34,7 +37,13 @@ class CookModeViewModel(recipeId: Int, repository: RecipeRepository) : ViewModel
 
     init {
         viewModelScope.launch {
-            _uiState.value = CookUiState.Cooking(repository.recipe(recipeId), step = 0)
+            _uiState.value = try {
+                CookUiState.Cooking(repository.recipe(recipeId), step = 0)
+            } catch (e: IOException) {
+                CookUiState.Error("网络不通，退出再进来试试")
+            } catch (e: HttpException) {
+                CookUiState.Error("服务器出错了（${e.code()}）")
+            }
         }
     }
 

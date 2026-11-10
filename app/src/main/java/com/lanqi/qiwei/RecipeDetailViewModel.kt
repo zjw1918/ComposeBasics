@@ -9,10 +9,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 
 /** 详情页只可能处在这两种状态之一：还在等，或者拿到了菜。 */
 sealed interface DetailUiState {
     data object Loading : DetailUiState
+    data class Error(val message: String) : DetailUiState
     data class Success(val recipe: Recipe, val servings: Int) : DetailUiState {
         /** 按份数换算后的用量（菜谱里写的是两人份）。业务规则放在这里，界面只管显示 */
         val ingredients: List<Ingredient>
@@ -33,9 +36,19 @@ class RecipeDetailViewModel(
 
     init {
         Log.d("Qiwei", "详情 ViewModel 上班：菜 #$recipeId")
+        load()
+    }
+
+    fun load() {
+        _uiState.value = DetailUiState.Loading
         viewModelScope.launch {
-            val recipe = repository.recipe(recipeId)
-            _uiState.value = DetailUiState.Success(recipe, servings = savedStateHandle["servings"] ?: 2)
+            _uiState.value = try {
+                DetailUiState.Success(repository.recipe(recipeId), servings = savedStateHandle["servings"] ?: 2)
+            } catch (e: IOException) {
+                DetailUiState.Error("网络不通，检查一下网络再试试")
+            } catch (e: HttpException) {
+                DetailUiState.Error("服务器出错了（${e.code()}）")
+            }
         }
     }
 

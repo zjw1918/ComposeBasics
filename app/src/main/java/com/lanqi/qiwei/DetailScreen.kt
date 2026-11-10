@@ -37,6 +37,9 @@ fun DetailScreen(viewModel: RecipeDetailViewModel, onCook: () -> Unit, onBack: (
         DetailUiState.Loading -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
+        is DetailUiState.Error -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            ErrorMessage(message = state.message, onRetry = viewModel::load)
+        }
         is DetailUiState.Success -> RecipeDetail(
             state = state,
             onServingsChange = viewModel::setServings,
