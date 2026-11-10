@@ -20,23 +20,23 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 /** 菜谱详情：只管显示 ViewModel 给的状态。数据从哪来、等多久，它不知道。 */
 @Composable
 fun DetailScreen(viewModel: RecipeDetailViewModel, onBack: () -> Unit) {
-    val uiState by viewModel.uiState.collectAsState()
-    val recipe = uiState.recipe
-    if (uiState.loading || recipe == null) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    // 带生命周期地收集：App 退到后台就停止收集，回到前台再接着收
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    // sealed interface：when 必须把每一种状态都处理到，漏了编译不过
+    when (val state = uiState) {
+        DetailUiState.Loading -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
-    } else {
-        RecipeDetail(recipe = recipe, onBack = onBack)
+        is DetailUiState.Success -> RecipeDetail(recipe = state.recipe, onBack = onBack)
     }
 }
 
