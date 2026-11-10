@@ -31,7 +31,7 @@ interface FavoriteDao {
 
     /** 写：suspend 函数。Room 3 里，DAO 不是 suspend 就是返回 Flow，在主线程上同步查库，根本写不出来 */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(favorite: FavoriteEntity)
+    fun insert(favorite: FavoriteEntity)  // 实验：去掉 suspend
 
     @Query("DELETE FROM favorites WHERE recipeId = :recipeId")
     suspend fun delete(recipeId: Int)
