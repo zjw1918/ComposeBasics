@@ -108,10 +108,8 @@ fun QiweiNavigation() {
                     )
                 }
                 entry<Cook> { key ->
-                    CookModeScreen(
-                        recipe = allRecipes.first { it.id == key.recipeId },
-                        onClose = { backStack.removeLastOrNull() }
-                    )
+                    val viewModel = viewModel { CookModeViewModel(key.recipeId) }
+                    CookModeScreen(viewModel = viewModel, onClose = { backStack.removeLastOrNull() })
                 }
                 entry<Favorites> { FavoritesScreen() }
                 entry<Mine> { MineScreen() }
