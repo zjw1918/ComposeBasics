@@ -1,6 +1,9 @@
 package com.lanqi.qiwei
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.navigationBars
@@ -102,6 +105,11 @@ fun QiweiNavigation() {
                 rememberSaveableStateHolderNavEntryDecorator(),
                 rememberViewModelStoreNavEntryDecorator(),
             ),
+            // 页面转场：进入新页面，新页从右边滑进来、旧页往左让一让；返回时反过来。
+            // 预测性返回：手指从边缘往里拖时，转场跟着手指走，松手才决定回不回去
+            transitionSpec = { slideInHorizontally { it } togetherWith slideOutHorizontally { -it / 3 } },
+            popTransitionSpec = { slideInHorizontally { -it / 3 } togetherWith slideOutHorizontally { it } },
+            predictivePopTransitionSpec = { _ -> slideInHorizontally { -it / 3 } togetherWith slideOutHorizontally { it } },
             entryProvider = entryProvider {
                 entry<Home> {
                     HomeScreen(
