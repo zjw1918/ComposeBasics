@@ -1,4 +1,4 @@
-package com.lanqi.qiwei
+package com.lanqi.qiwei.feature.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -18,6 +18,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lanqi.qiwei.data.SettingsRepository
+import com.lanqi.qiwei.data.ThemeMode
 import kotlinx.coroutines.launch
 
 /** 设置页：选主题。选中哪个，由 DataStore 里存的值决定。 */

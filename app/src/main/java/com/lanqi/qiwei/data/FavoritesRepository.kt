@@ -1,5 +1,6 @@
-package com.lanqi.qiwei
+package com.lanqi.qiwei.data
 
+import com.lanqi.qiwei.model.Recipe
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

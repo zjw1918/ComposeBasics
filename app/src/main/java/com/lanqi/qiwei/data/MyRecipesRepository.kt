@@ -1,9 +1,9 @@
-package com.lanqi.qiwei
+package com.lanqi.qiwei.data
 
 import android.util.Log
+import java.io.IOException
 import kotlinx.coroutines.flow.Flow
 import retrofit2.HttpException
-import java.io.IOException
 
 /** 我的菜谱：存在本机数据库里；每次保存后，顺手往后端备份一份。 */
 class MyRecipesRepository(private val dao: MyRecipeDao, private val api: QiweiApi) {

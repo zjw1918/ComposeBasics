@@ -1,17 +1,21 @@
-package com.lanqi.qiwei
+package com.lanqi.qiwei.feature.detail
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lanqi.qiwei.data.FavoritesRepository
+import com.lanqi.qiwei.data.RecipeRepository
+import com.lanqi.qiwei.model.Ingredient
+import com.lanqi.qiwei.model.Recipe
+import java.io.IOException
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
-import java.io.IOException
 
 /** 详情页只可能处在这两种状态之一：还在等，或者拿到了菜。 */
 sealed interface DetailUiState {

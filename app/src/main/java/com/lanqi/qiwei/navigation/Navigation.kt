@@ -1,4 +1,4 @@
-package com.lanqi.qiwei
+package com.lanqi.qiwei.navigation
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.slideInHorizontally
@@ -24,14 +24,28 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation3.runtime.NavKey
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.lanqi.qiwei.appContainer
+import com.lanqi.qiwei.feature.cook.CookModeScreen
+import com.lanqi.qiwei.feature.cook.CookModeViewModel
+import com.lanqi.qiwei.feature.detail.DetailScreen
+import com.lanqi.qiwei.feature.detail.RecipeDetailViewModel
+import com.lanqi.qiwei.feature.favorites.FavoritesScreen
+import com.lanqi.qiwei.feature.favorites.FavoritesViewModel
+import com.lanqi.qiwei.feature.home.HomeScreen
+import com.lanqi.qiwei.feature.home.HomeViewModel
+import com.lanqi.qiwei.feature.mine.EditorScreen
+import com.lanqi.qiwei.feature.mine.EditorViewModel
+import com.lanqi.qiwei.feature.mine.MineScreen
+import com.lanqi.qiwei.feature.mine.MineViewModel
+import com.lanqi.qiwei.feature.settings.SettingsScreen
 import kotlinx.serialization.Serializable
 
 // 路由键：每个页面一个。详情页只带菜的 id，不带整道菜。

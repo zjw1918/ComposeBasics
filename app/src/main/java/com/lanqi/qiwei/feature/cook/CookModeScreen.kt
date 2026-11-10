@@ -1,4 +1,4 @@
-package com.lanqi.qiwei
+package com.lanqi.qiwei.feature.cook
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lanqi.qiwei.ui.components.formatTime
 import kotlinx.coroutines.delay
 
 /** 每一步的计时：60 秒（示例） */
@@ -139,6 +140,3 @@ fun CookingContent(
         }
     }
 }
-
-/** 90 → "01:30" */
-fun formatTime(seconds: Int): String = "%02d:%02d".format(seconds / 60, seconds % 60)

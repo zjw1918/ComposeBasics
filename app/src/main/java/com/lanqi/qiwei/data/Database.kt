@@ -1,9 +1,9 @@
-package com.lanqi.qiwei
+package com.lanqi.qiwei.data
 
 import androidx.room3.AutoMigration
 import androidx.room3.Dao
-import androidx.room3.Delete
 import androidx.room3.Database
+import androidx.room3.Delete
 import androidx.room3.Entity
 import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy

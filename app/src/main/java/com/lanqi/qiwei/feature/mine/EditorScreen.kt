@@ -1,4 +1,4 @@
-package com.lanqi.qiwei
+package com.lanqi.qiwei.feature.mine
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

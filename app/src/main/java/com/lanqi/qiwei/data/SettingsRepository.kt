@@ -1,4 +1,4 @@
-package com.lanqi.qiwei
+package com.lanqi.qiwei.data
 
 import android.content.Context
 import androidx.datastore.core.DataStore

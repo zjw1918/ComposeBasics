@@ -1,8 +1,11 @@
-package com.lanqi.qiwei
+package com.lanqi.qiwei.feature.cook
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lanqi.qiwei.data.RecipeRepository
+import com.lanqi.qiwei.model.Recipe
+import java.io.IOException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +14,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
-import java.io.IOException
 
 /** 一个计时器：属于第几步、还剩几秒、正在走还是停着。 */
 data class CookTimer(val secondsLeft: Int, val running: Boolean)

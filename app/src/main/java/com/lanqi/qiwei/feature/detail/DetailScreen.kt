@@ -1,4 +1,4 @@
-package com.lanqi.qiwei
+package com.lanqi.qiwei.feature.detail
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -13,14 +13,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -39,6 +38,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.lanqi.qiwei.ui.components.ErrorMessage
+import com.lanqi.qiwei.ui.components.FavoriteButton
+import com.lanqi.qiwei.ui.components.SectionTitle
+import com.lanqi.qiwei.ui.components.ServingsStepper
+import com.lanqi.qiwei.ui.components.formatAmount
 
 /** 菜谱详情：只管显示 ViewModel 给的状态。数据从哪来、等多久，它不知道。 */
 @Composable
@@ -148,18 +152,3 @@ fun RecipeDetail(
         }
     }
 }
-
-@Composable
-fun SectionTitle(text: String) {
-    HorizontalDivider()
-    Text(
-        text = text,
-        modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 4.dp),
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.primary
-    )
-}
-
-/** 2.0 显示成 2，0.5 显示成 0.5 */
-fun formatAmount(amount: Double): String =
-    if (amount % 1.0 == 0.0) amount.toInt().toString() else "%.1f".format(amount).trimEnd('0').trimEnd('.')

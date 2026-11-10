@@ -1,4 +1,4 @@
-package com.lanqi.qiwei
+package com.lanqi.qiwei.feature.home
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -7,6 +7,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lanqi.qiwei.data.FavoritesRepository
+import com.lanqi.qiwei.data.RecipeRepository
+import com.lanqi.qiwei.model.Recipe
+import java.io.IOException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +25,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
-import java.io.IOException
 
 /**
  * 首页状态：离线优先之后，不再是「在取 / 成功 / 失败」三选一，

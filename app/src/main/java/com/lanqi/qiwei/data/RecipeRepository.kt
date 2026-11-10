@@ -1,5 +1,9 @@
-package com.lanqi.qiwei
+package com.lanqi.qiwei.data
 
+import com.lanqi.qiwei.BASE_URL
+import com.lanqi.qiwei.model.Ingredient
+import com.lanqi.qiwei.model.Recipe
+import java.io.IOException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
@@ -7,7 +11,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
-import java.io.IOException
 
 /**
  * 菜谱仓库，离线优先：

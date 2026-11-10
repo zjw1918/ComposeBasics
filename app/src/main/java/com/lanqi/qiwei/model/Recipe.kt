@@ -1,4 +1,6 @@
-package com.lanqi.qiwei
+package com.lanqi.qiwei.model
+
+
 
 /** 一道菜的数据。只描述“是什么”，不管怎么显示。 */
 data class Recipe(

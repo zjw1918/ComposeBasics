@@ -1,5 +1,8 @@
-package com.lanqi.qiwei
+package com.lanqi.qiwei.data
 
+import com.lanqi.qiwei.BASE_URL
+import com.lanqi.qiwei.model.Ingredient
+import com.lanqi.qiwei.model.Recipe
 import kotlinx.serialization.Serializable
 import retrofit2.http.Body
 import retrofit2.http.GET

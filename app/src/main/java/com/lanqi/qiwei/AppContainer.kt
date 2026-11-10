@@ -7,6 +7,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.room3.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.lanqi.qiwei.data.FavoritesRepository
+import com.lanqi.qiwei.data.MyRecipesRepository
+import com.lanqi.qiwei.data.QiweiApi
+import com.lanqi.qiwei.data.QiweiDatabase
+import com.lanqi.qiwei.data.RecipeRepository
+import com.lanqi.qiwei.data.SettingsRepository
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
