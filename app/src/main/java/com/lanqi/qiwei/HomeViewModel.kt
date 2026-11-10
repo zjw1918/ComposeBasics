@@ -1,5 +1,6 @@
 package com.lanqi.qiwei
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,9 @@ class HomeViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
+            // 这里在主线程；recommended() 自己会切到后台去算，算完回到这里
             _recipes.value = RecipeRepository.recommended()
+            Log.d("Qiwei", "排序结果交给界面，线程：${Thread.currentThread().name}")
         }
     }
 }
