@@ -108,13 +108,16 @@ fun RecipeCard(title: String, subtitle: String, meta: String, rating: String, mo
 /** 份数加减器：rememberSaveable 让状态在旋转屏幕（Activity 重建）之后也活下来。 */
 @Composable
 fun ServingsStepper() {
-    var servings by rememberSaveable { mutableStateOf(2) }
+    var portion by rememberSaveable { mutableStateOf(Portion(2, "人份")) }
     Row(verticalAlignment = Alignment.CenterVertically) {
-        TextButton(onClick = { if (servings > 1) servings-- }) { Text("−") }
-        Text(text = "$servings 人份", style = MaterialTheme.typography.bodyMedium)
-        TextButton(onClick = { servings++ }) { Text("+") }
+        TextButton(onClick = { if (portion.count > 1) portion = portion.copy(count = portion.count - 1) }) { Text("−") }
+        Text(text = "${portion.count} ${portion.unit}", style = MaterialTheme.typography.bodyMedium)
+        TextButton(onClick = { portion = portion.copy(count = portion.count + 1) }) { Text("+") }
     }
 }
+
+/** 份数 + 单位（“人份”“碗”“盘”）：一个自己写的类。 */
+data class Portion(val count: Int, val unit: String)
 
 @Preview(name = "浅色", showBackground = true)
 @Preview(name = "深色", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
