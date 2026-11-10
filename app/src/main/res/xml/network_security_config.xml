@@ -2,6 +2,6 @@
 <!-- 只对本机（localhost，经 adb reverse 接到电脑上的鳍味后端）放行明文 HTTP；其他地址仍然只能 HTTPS -->
 <network-security-config>
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="false">localhost</domain>
+        <domain includeSubdomains="false">10.0.2.2</domain>
     </domain-config>
 </network-security-config>

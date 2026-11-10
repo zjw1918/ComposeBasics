@@ -16,7 +16,8 @@ import retrofit2.create
  * 鳍味后端跑在电脑的 8080 端口上。开发时用 `adb reverse tcp:8080 tcp:8080` 把手机（或模拟器）自己的 8080 端口
  * 接到电脑上，所以 App 访问的是 localhost。真机用 USB 连着也一样能用。
  */
-const val BASE_URL = "http://localhost:8080/"
+// 实验：不用 adb reverse，直接访问模拟器里代表电脑的 10.0.2.2
+const val BASE_URL = "http://10.0.2.2:8080/"
 
 /**
  * 手动依赖注入：整个 App 共用的对象，在这里各创建一次。
