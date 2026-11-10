@@ -40,14 +40,14 @@ class AppContainer(context: Context) {
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
 
-    val recipeRepository = RecipeRepository(retrofit.create<QiweiApi>())
-
     val settingsRepository = SettingsRepository(context)
 
     // 数据库文件：/data/data/com.lanqi.qiwei/databases/qiwei.db
     private val database = Room.databaseBuilder<QiweiDatabase>(context, "qiwei.db")
         .setDriver(BundledSQLiteDriver())
         .build()
+
+    val recipeRepository = RecipeRepository(retrofit.create<QiweiApi>(), database.recipeDao())
 
     val favoritesRepository = FavoritesRepository(database.favoriteDao())
 }

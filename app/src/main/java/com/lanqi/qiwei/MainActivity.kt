@@ -28,6 +28,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
@@ -83,8 +84,7 @@ fun HomeScreen(viewModel: HomeViewModel, onOpenRecipe: (Int) -> Unit) {
     var category by rememberSaveable { mutableStateOf("全部") }
     // 点了「不感兴趣」的菜
     val hidden = remember { mutableStateListOf<Int>() }
-    val recipes = (uiState as? HomeUiState.Success)?.recipes.orEmpty()
-    val shown = recipes.filter {
+    val shown = uiState.recipes.filter {
         it.id !in hidden && (category == "全部" || it.category == category)
     }
     Scaffold(
@@ -106,17 +106,12 @@ fun HomeScreen(viewModel: HomeViewModel, onOpenRecipe: (Int) -> Unit) {
                     )
                 }
             }
-            // 在取：转个圈；出错：说清楚原因，给一个重试按钮
-            when (val state = uiState) {
-                HomeUiState.Loading -> item(key = "loading") {
-                    Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                }
-                is HomeUiState.Error -> item(key = "error") {
-                    ErrorMessage(message = state.message, onRetry = viewModel::retry)
-                }
-                is HomeUiState.Success -> Unit
+            // 刷新中：顶上一条细进度条；有话要说：一行提示 + 重试
+            if (uiState.refreshing) {
+                item(key = "refreshing") { LinearProgressIndicator(modifier = Modifier.fillMaxWidth()) }
+            }
+            uiState.message?.let { message ->
+                item(key = "message") { ErrorMessage(message = message, onRetry = viewModel::retry) }
             }
             // key：每一项的身份是菜的 id，不是它排第几；contentType：同一种卡片才互相复用
             items(shown, key = { it.id }, contentType = { "recipe" }) { recipe ->

@@ -7,9 +7,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -33,44 +32,52 @@ class RecipeDetailViewModel(
     // SavedStateHandle：系统帮忙保管的一小块状态，App 在后台被杀掉再回来，也还在
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    // 可以改的那份只在自己手里；交给界面的是只读的
-    private val _uiState = MutableStateFlow<DetailUiState>(DetailUiState.Loading)
-    val uiState: StateFlow<DetailUiState> = _uiState.asStateFlow()
+    private val loadError = MutableStateFlow<String?>(null)
+
+    /** 读：菜来自数据库，份数来自 SavedStateHandle，出错信息来自刷新。三样合成一个状态 */
+    val uiState: StateFlow<DetailUiState> = combine(
+        repository.observeRecipe(recipeId),
+        savedStateHandle.getStateFlow("servings", 2),
+        loadError,
+    ) { recipe, servings, error ->
+        when {
+            recipe != null -> DetailUiState.Success(recipe, servings)  // 冷库里有：先显示，哪怕刷新失败
+            error != null -> DetailUiState.Error(error)
+            else -> DetailUiState.Loading
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DetailUiState.Loading)
 
     /** 这道菜收藏了没有：直接来自数据库的 Flow */
     val isFavorite: StateFlow<Boolean> = favorites.isFavorite(recipeId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
-
-    fun toggleFavorite() {
-        val state = uiState.value as? DetailUiState.Success ?: return
-        viewModelScope.launch { favorites.setFavorite(state.recipe, !isFavorite.value) }
-    }
 
     init {
         Log.d("Qiwei", "详情 ViewModel 上班：菜 #$recipeId")
         load()
     }
 
+    /** 写：去后端刷新这道菜，写进数据库 */
     fun load() {
-        _uiState.value = DetailUiState.Loading
+        loadError.value = null
         viewModelScope.launch {
-            _uiState.value = try {
-                DetailUiState.Success(repository.recipe(recipeId), servings = savedStateHandle["servings"] ?: 2)
+            try {
+                repository.refreshRecipe(recipeId)
             } catch (e: IOException) {
-                DetailUiState.Error("网络不通，检查一下网络再试试")
+                loadError.value = "网络不通，检查一下网络再试试"
             } catch (e: HttpException) {
-                DetailUiState.Error("服务器出错了（${e.code()}）")
+                loadError.value = "服务器出错了（${e.code()}）"
             }
         }
     }
 
-    /** 界面上点了加减：记下来，再更新状态 */
+    fun toggleFavorite() {
+        val state = uiState.value as? DetailUiState.Success ?: return
+        viewModelScope.launch { favorites.setFavorite(state.recipe, !isFavorite.value) }
+    }
+
+    /** 界面上点了加减：存进 SavedStateHandle，上面的 combine 自己就会算出新状态 */
     fun setServings(servings: Int) {
-        if (servings < 1) return
-        savedStateHandle["servings"] = servings
-        _uiState.update { state ->
-            if (state is DetailUiState.Success) state.copy(servings = servings) else state
-        }
+        if (servings >= 1) savedStateHandle["servings"] = servings
     }
 
     override fun onCleared() {
