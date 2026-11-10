@@ -13,6 +13,11 @@ private val mains = listOf(
     "鱿鱼", "猪蹄", "冬瓜", "腐竹", "蛤蜊",
 )
 
+private val seasonings = listOf(
+    Ingredient("葱", 1.0, "根"), Ingredient("姜", 3.0, "片"), Ingredient("蒜", 4.0, "瓣"), Ingredient("生抽", 1.0, "勺"),
+    Ingredient("盐", 0.5, "小勺"), Ingredient("白糖", 1.0, "小勺"), Ingredient("料酒", 1.0, "勺"), Ingredient("干辣椒", 3.0, "个"),
+)
+
 /**
  * 生成 count 道示例菜：前 8 道是手写的经典菜，后面按「风味 + 做法 + 主料」组合（10 × 20 × 25 = 5000 种）。
  * 用固定的随机种子，每次生成的结果都一样。
@@ -20,8 +25,9 @@ private val mains = listOf(
 fun generateRecipes(count: Int): List<Recipe> {
     val random = Random(seed = 42)
     val generated = flavors.flatMap { flavor ->
-        methods.flatMap { method -> mains.map { main -> "$flavor$method$main" } }
-    }.map { title ->
+        methods.flatMap { method -> mains.map { main -> Triple(flavor, method, main) } }
+    }.map { (flavor, method, main) ->
+        val title = "$flavor$method$main"
         Recipe(
             id = 0,
             title = title,
@@ -30,6 +36,9 @@ fun generateRecipes(count: Int): List<Recipe> {
             minutes = random.nextInt(2, 19) * 5,
             difficulty = listOf("简单", "中等", "较难")[random.nextInt(3)],
             rating = (35 + random.nextInt(15)) / 10.0,
+            ingredients = listOf(Ingredient(main, 300.0, "克")) +
+                seasonings.shuffled(random).take(random.nextInt(2, 5)),
+            steps = listOf("${main}洗净切好。", "热锅下油，放调料炒香。", "下${main}翻炒均匀。", "调味，出锅装盘。"),
         )
     }
     return (sampleRecipes + generated).take(count).mapIndexed { i, r -> r.copy(id = i + 1) }

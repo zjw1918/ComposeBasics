@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             QiweiTheme {
-                HomeScreen()
+                QiweiNavigation()
             }
         }
     }
@@ -65,7 +65,7 @@ val allRecipes = generateRecipes(5000)
 /** 首页：搜索框 + 分类 + 菜谱列表。两个状态都放在首页这一层：状态往下传，事件往上传。 */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(onOpenRecipe: (Int) -> Unit) {
     var query by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf("全部") }
     // 点了「不感兴趣」的菜
@@ -94,7 +94,11 @@ fun HomeScreen() {
             }
             // key：每一项的身份是菜的 id，不是它排第几；contentType：同一种卡片才互相复用
             items(shown, key = { it.id }, contentType = { "recipe" }) { recipe ->
-                RecipeCard(recipe = recipe, onHide = { hidden.add(recipe.id) })
+                RecipeCard(
+                    recipe = recipe,
+                    onClick = { onOpenRecipe(recipe.id) },
+                    onHide = { hidden.add(recipe.id) }
+                )
             }
         }
     }
@@ -133,12 +137,13 @@ fun CategoryChips(selected: String, onSelect: (String) -> Unit, modifier: Modifi
 
 /** 一张菜谱卡片：拿到一道菜的数据，描述它长什么样。 */
 @Composable
-fun RecipeCard(recipe: Recipe, onHide: () -> Unit, modifier: Modifier = Modifier) {
+fun RecipeCard(recipe: Recipe, onClick: () -> Unit, onHide: () -> Unit, modifier: Modifier = Modifier) {
     // 份数的状态，提升到了卡片这一层
     var servings by rememberSaveable { mutableStateOf(2) }
     // 收藏：先记在卡片里（第 13 期存进数据库）
     var liked by remember { mutableStateOf(false) }
     ElevatedCard(
+        onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -215,6 +220,6 @@ fun ServingsStepperManyPreview() {
 @Composable
 fun HomeScreenPreview() {
     QiweiTheme {
-        HomeScreen()
+        HomeScreen(onOpenRecipe = {})
     }
 }
