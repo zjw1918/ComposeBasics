@@ -18,10 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
-/** 收藏页：先占个位，第 13 期接上数据库。 */
-@Composable
-fun FavoritesScreen() = ComingSoon(title = "收藏", text = "收藏的菜会出现在这里（第 13 期）")
-
 /** 我的：现在只有「设置」一项，第 15 期加「我的菜谱」。 */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

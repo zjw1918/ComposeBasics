@@ -79,6 +79,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun HomeScreen(viewModel: HomeViewModel, onOpenRecipe: (Int) -> Unit) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val favoriteIds by viewModel.favoriteIds.collectAsStateWithLifecycle()
     var category by rememberSaveable { mutableStateOf("全部") }
     // 点了「不感兴趣」的菜
     val hidden = remember { mutableStateListOf<Int>() }
@@ -121,6 +122,8 @@ fun HomeScreen(viewModel: HomeViewModel, onOpenRecipe: (Int) -> Unit) {
             items(shown, key = { it.id }, contentType = { "recipe" }) { recipe ->
                 RecipeCard(
                     recipe = recipe,
+                    liked = recipe.id in favoriteIds,
+                    onToggleLike = { viewModel.toggleFavorite(recipe) },
                     onClick = { onOpenRecipe(recipe.id) },
                     onHide = { hidden.add(recipe.id) }
                 )
@@ -175,11 +178,16 @@ fun CategoryChips(selected: String, onSelect: (String) -> Unit, modifier: Modifi
 
 /** 一张菜谱卡片：拿到一道菜的数据，描述它长什么样。 */
 @Composable
-fun RecipeCard(recipe: Recipe, onClick: () -> Unit, onHide: () -> Unit, modifier: Modifier = Modifier) {
+fun RecipeCard(
+    recipe: Recipe,
+    liked: Boolean,
+    onToggleLike: () -> Unit,
+    onClick: () -> Unit,
+    onHide: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     // 份数的状态，提升到了卡片这一层
     var servings by rememberSaveable { mutableStateOf(2) }
-    // 收藏：先记在卡片里（第 13 期存进数据库）
-    var liked by remember { mutableStateOf(false) }
     ElevatedCard(
         onClick = onClick,
         modifier = modifier
@@ -221,7 +229,7 @@ fun RecipeCard(recipe: Recipe, onClick: () -> Unit, onHide: () -> Unit, modifier
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = "★ ${recipe.rating}", style = MaterialTheme.typography.labelLarge)
-                IconToggleButton(checked = liked, onCheckedChange = { liked = it }) {
+                IconToggleButton(checked = liked, onCheckedChange = { onToggleLike() }) {
                     Icon(
                         imageVector = if (liked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                         contentDescription = if (liked) "取消收藏" else "收藏",
@@ -261,6 +269,6 @@ fun ServingsStepperManyPreview() {
 @Composable
 fun RecipeCardPreview() {
     QiweiTheme {
-        RecipeCard(recipe = sampleRecipes.first(), onClick = {}, onHide = {})
+        RecipeCard(recipe = sampleRecipes.first(), liked = true, onToggleLike = {}, onClick = {}, onHide = {})
     }
 }

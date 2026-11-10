@@ -29,7 +29,7 @@ interface FavoriteDao {
     @Query("SELECT EXISTS(SELECT 1 FROM favorites WHERE recipeId = :recipeId)")
     fun isFavorite(recipeId: Int): Flow<Boolean>
 
-    /** 写：suspend 函数。Room 3 里，DAO 不是 suspend 就是返回 Flow，在主线程上同步查库，根本写不出来 */
+    /** 写：suspend 函数。Room 自己切到后台线程去写；要是写成普通函数，在主线程上一调用就崩 */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(favorite: FavoriteEntity)
 

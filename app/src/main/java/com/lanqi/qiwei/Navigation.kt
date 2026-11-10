@@ -101,7 +101,7 @@ fun QiweiNavigation() {
             entryProvider = entryProvider {
                 entry<Home> {
                     HomeScreen(
-                        viewModel = viewModel { HomeViewModel(container.recipeRepository) },
+                        viewModel = viewModel { HomeViewModel(container.recipeRepository, container.favoritesRepository) },
                         onOpenRecipe = { id -> backStack.add(Detail(id)) }
                     )
                 }
@@ -122,7 +122,12 @@ fun QiweiNavigation() {
                     val viewModel = viewModel { CookModeViewModel(key.recipeId, container.recipeRepository) }
                     CookModeScreen(viewModel = viewModel, onClose = { backStack.removeLastOrNull() })
                 }
-                entry<Favorites> { FavoritesScreen() }
+                entry<Favorites> {
+                    FavoritesScreen(
+                        viewModel = viewModel { FavoritesViewModel(container.favoritesRepository) },
+                        onOpenRecipe = { id -> backStack.add(Detail(id)) }
+                    )
+                }
                 entry<Mine> { MineScreen(onOpenSettings = { backStack.add(Settings) }) }
                 entry<Settings> {
                     SettingsScreen(settings = container.settingsRepository, onBack = { backStack.removeLastOrNull() })

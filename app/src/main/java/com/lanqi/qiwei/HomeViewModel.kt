@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -31,7 +32,10 @@ sealed interface HomeUiState {
 
 /** 首页的 ViewModel：搜索词变了，就去服务器搜；只搜用户停手后的那个词，旧的请求自动取消。 */
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-class HomeViewModel(private val repository: RecipeRepository) : ViewModel() {
+class HomeViewModel(
+    private val repository: RecipeRepository,
+    private val favorites: FavoritesRepository,
+) : ViewModel() {
     /** 搜索框里的字。用 Compose 的 State 存（文本框要求同步更新，不能等） */
     var query by mutableStateOf("")
         private set
@@ -52,6 +56,14 @@ class HomeViewModel(private val repository: RecipeRepository) : ViewModel() {
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = HomeUiState.Loading,
             )
+
+    /** 收藏了哪些菜：来自数据库。卡片上的心形不再自己记，而是看这里 */
+    val favoriteIds: StateFlow<Set<Int>> = favorites.favoriteIds
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptySet())
+
+    fun toggleFavorite(recipe: Recipe) {
+        viewModelScope.launch { favorites.setFavorite(recipe, recipe.id !in favoriteIds.value) }
+    }
 
     fun onQueryChange(newQuery: String) {
         query = newQuery
