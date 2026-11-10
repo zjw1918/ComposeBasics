@@ -22,6 +22,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
@@ -31,8 +32,12 @@ import androidx.compose.ui.unit.dp
 fun EditorScreen(viewModel: EditorViewModel, isNew: Boolean, onDone: () -> Unit) {
     val form = viewModel.form
     // 保存完就返回（「保存成功」这件事先记成一个状态，📌 第 15 期的便签）
+    val keyboard = LocalSoftwareKeyboardController.current
     LaunchedEffect(viewModel.saved) {
-        if (viewModel.saved) onDone()
+        if (viewModel.saved) {
+            keyboard?.hide()
+            onDone()
+        }
     }
     Scaffold(
         topBar = {
