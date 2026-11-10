@@ -10,15 +10,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -58,26 +59,43 @@ fun FavoritesScreen(viewModel: FavoritesViewModel, onOpenRecipe: (Int) -> Unit) 
         } else {
             LazyColumn(modifier = Modifier.padding(innerPadding)) {
                 items(favorites, key = { it.recipeId }) { favorite ->
-                    ListItem(
-                        headlineContent = { Text(favorite.title) },
-                        leadingContent = {
-                            AsyncImage(
-                                model = favorite.imageUrl,
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
+                    // 向左滑删除：滑到底，从数据库删掉
+                    val dismissState = rememberSwipeToDismissBoxState()
+                    SwipeToDismissBox(
+                        state = dismissState,
+                        enableDismissFromStartToEnd = false,
+                        onDismiss = { viewModel.remove(favorite.recipeId) },
+                        backgroundContent = {
+                            Box(
                                 modifier = Modifier
-                                    .size(48.dp)
-                                    .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.secondaryContainer)
-                            )
-                        },
-                        trailingContent = {
-                            IconButton(onClick = { viewModel.remove(favorite.recipeId) }) {
-                                Icon(Icons.Filled.Favorite, contentDescription = "取消收藏", tint = MaterialTheme.colorScheme.error)
+                                    .fillMaxSize()
+                                    .background(MaterialTheme.colorScheme.errorContainer)
+                                    .padding(horizontal = 24.dp),
+                                contentAlignment = Alignment.CenterEnd
+                            ) {
+                                Icon(Icons.Filled.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.onErrorContainer)
                             }
                         },
-                        modifier = Modifier.clickable { onOpenRecipe(favorite.recipeId) }
-                    )
+                        // animateItem：有一项被删掉，下面的项不是瞬间跳上来，而是滑上来
+                        modifier = Modifier.animateItem()
+                    ) {
+                        ListItem(
+                            headlineContent = { Text(favorite.title) },
+                            supportingContent = { Text("向左滑，取消收藏") },
+                            leadingContent = {
+                                AsyncImage(
+                                    model = favorite.imageUrl,
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .size(48.dp)
+                                        .clip(CircleShape)
+                                        .background(MaterialTheme.colorScheme.secondaryContainer)
+                                )
+                            },
+                            modifier = Modifier.clickable { onOpenRecipe(favorite.recipeId) }
+                        )
+                    }
                 }
             }
         }
