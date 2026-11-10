@@ -47,7 +47,11 @@ class AppContainer(context: Context) {
         .setDriver(BundledSQLiteDriver())
         .build()
 
-    val recipeRepository = RecipeRepository(retrofit.create<QiweiApi>(), database.recipeDao())
+    private val api = retrofit.create<QiweiApi>()
+
+    val recipeRepository = RecipeRepository(api, database.recipeDao())
+
+    val myRecipesRepository = MyRecipesRepository(database.myRecipeDao(), api)
 
     val favoritesRepository = FavoritesRepository(database.favoriteDao())
 }

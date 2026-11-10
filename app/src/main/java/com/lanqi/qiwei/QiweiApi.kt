@@ -1,7 +1,9 @@
 package com.lanqi.qiwei
 
 import kotlinx.serialization.Serializable
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -13,7 +15,17 @@ interface QiweiApi {
 
     @GET("recipes/{id}")
     suspend fun recipe(@Path("id") id: Int): RecipeDto
+
+    /** 把「我的菜谱」备份一份到后端 */
+    @POST("my-recipes")
+    suspend fun backup(@Body recipe: MyRecipeDto): BackupResult
 }
+
+@Serializable
+data class MyRecipeDto(val title: String, val minutes: Int, val ingredients: String, val steps: String)
+
+@Serializable
+data class BackupResult(val count: Int)
 
 // DTO：和服务器 JSON 一一对应的数据类。服务器怎么写，它就怎么写
 @Serializable

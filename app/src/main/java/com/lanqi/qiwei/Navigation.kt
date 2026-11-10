@@ -51,6 +51,10 @@ data object Mine : NavKey
 @Serializable
 data object Settings : NavKey
 
+/** 编辑「我的菜谱」：id 为 null 表示新建 */
+@Serializable
+data class Editor(val myRecipeId: Long? = null) : NavKey
+
 /** 底部的三个标签。每个标签有自己的根页面。 */
 enum class Tab(val label: String, val icon: ImageVector, val root: NavKey) {
     HOME("首页", Icons.Filled.Home, Home),
@@ -128,7 +132,21 @@ fun QiweiNavigation() {
                         onOpenRecipe = { id -> backStack.add(Detail(id)) }
                     )
                 }
-                entry<Mine> { MineScreen(onOpenSettings = { backStack.add(Settings) }) }
+                entry<Mine> {
+                    MineScreen(
+                        viewModel = viewModel { MineViewModel(container.myRecipesRepository) },
+                        onNewRecipe = { backStack.add(Editor()) },
+                        onEditRecipe = { id -> backStack.add(Editor(id)) },
+                        onOpenSettings = { backStack.add(Settings) }
+                    )
+                }
+                entry<Editor> { key ->
+                    EditorScreen(
+                        viewModel = viewModel { EditorViewModel(key.myRecipeId, container.myRecipesRepository) },
+                        isNew = key.myRecipeId == null,
+                        onDone = { backStack.removeLastOrNull() }
+                    )
+                }
                 entry<Settings> {
                     SettingsScreen(settings = container.settingsRepository, onBack = { backStack.removeLastOrNull() })
                 }

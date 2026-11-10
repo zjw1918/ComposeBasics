@@ -2,6 +2,7 @@ package com.lanqi.qiwei
 
 import androidx.room3.AutoMigration
 import androidx.room3.Dao
+import androidx.room3.Delete
 import androidx.room3.Database
 import androidx.room3.Entity
 import androidx.room3.Insert
@@ -9,6 +10,7 @@ import androidx.room3.OnConflictStrategy
 import androidx.room3.PrimaryKey
 import androidx.room3.Query
 import androidx.room3.RoomDatabase
+import androidx.room3.Update
 import androidx.room3.Upsert
 import kotlinx.coroutines.flow.Flow
 
@@ -80,17 +82,50 @@ interface RecipeDao {
     suspend fun upsertDetail(detail: RecipeDetailEntity)
 }
 
+/** 我的菜谱：用户自己写的菜，只存在手机上（另外试着备份一份到后端） */
+@Entity(tableName = "my_recipes")
+data class MyRecipeEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val title: String,
+    val minutes: Int,
+    /** 每行一样食材 */
+    val ingredients: String,
+    /** 每行一步 */
+    val steps: String,
+    val updatedAt: Long,
+)
+
+@Dao
+interface MyRecipeDao {
+    @Query("SELECT * FROM my_recipes ORDER BY updatedAt DESC")
+    fun observeAll(): Flow<List<MyRecipeEntity>>
+
+    @Query("SELECT * FROM my_recipes WHERE id = :id")
+    suspend fun get(id: Long): MyRecipeEntity?
+
+    /** 返回新行的 id */
+    @Insert
+    suspend fun insert(recipe: MyRecipeEntity): Long
+
+    @Update
+    suspend fun update(recipe: MyRecipeEntity)
+
+    @Delete
+    suspend fun delete(recipe: MyRecipeEntity)
+}
+
 /**
  * 数据库：列出有哪些表、版本号是几。
  * 这一期加了两张表，所以版本从 1 升到 2；AutoMigration 让 Room 对照导出的 schema，自动生成升级的 SQL，
  * 已经装了旧版的手机，收藏不会丢。
  */
 @Database(
-    entities = [FavoriteEntity::class, RecipeEntity::class, RecipeDetailEntity::class],
-    version = 2,
-    autoMigrations = [AutoMigration(from = 1, to = 2)],
+    entities = [FavoriteEntity::class, RecipeEntity::class, RecipeDetailEntity::class, MyRecipeEntity::class],
+    version = 3,
+    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3)],
 )
 abstract class QiweiDatabase : RoomDatabase() {
     abstract fun favoriteDao(): FavoriteDao
     abstract fun recipeDao(): RecipeDao
+    abstract fun myRecipeDao(): MyRecipeDao
 }
