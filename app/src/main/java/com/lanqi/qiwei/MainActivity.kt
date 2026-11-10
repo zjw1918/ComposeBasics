@@ -103,7 +103,7 @@ fun HomeScreen(viewModel: HomeViewModel, onOpenRecipe: (Int) -> Unit) {
                     }
                 }
                 is HomeUiState.Error -> item(key = "error") {
-                    ErrorMessage(message = state.message, onRetry = viewModel::load)
+                    ErrorMessage(message = state.message, onRetry = viewModel::retry)
                 }
                 is HomeUiState.Success -> Unit
             }
