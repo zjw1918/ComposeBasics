@@ -25,13 +25,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.delay
 
 /** 每一步的计时：60 秒（示例） */
 const val STEP_SECONDS = 60
@@ -88,7 +93,21 @@ fun CookingContent(
                 modifier = Modifier.fillMaxWidth()
             )
             Text("第 ${step + 1} 步 / 共 ${recipe.steps.size} 步", style = MaterialTheme.typography.labelLarge)
-            Spacer(modifier = Modifier.height(32.dp))
+            // 每换一步，提示条出现 3 秒。LaunchedEffect(step)：step 一变，旧的协程取消，新的重新开始数
+            var showTip by remember(step) { mutableStateOf(true) }
+            LaunchedEffect(step) {
+                delay(3000)
+                showTip = false
+            }
+            Box(modifier = Modifier.height(32.dp), contentAlignment = Alignment.Center) {
+                if (showTip) {
+                    Text(
+                        "小提示：开了计时器就可以去下一步，它会接着走",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+            }
             Text(
                 text = recipe.steps[step],
                 style = MaterialTheme.typography.headlineMedium,
