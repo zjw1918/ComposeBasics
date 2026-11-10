@@ -36,7 +36,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            QiweiTheme {
+            // 实验：打开动态取色，颜色跟着壁纸走
+            QiweiTheme(dynamicColor = true) {
                 HomeScreen()
             }
         }
