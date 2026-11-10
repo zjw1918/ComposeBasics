@@ -28,16 +28,20 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -87,41 +91,50 @@ fun HomeScreen(viewModel: HomeViewModel, onOpenRecipe: (Int) -> Unit) {
     val shown = uiState.recipes.filter {
         it.id !in hidden && (category == "全部" || it.category == category)
     }
+    // 一次性的提示：显示成屏幕底部的 Snackbar，显示完告诉 ViewModel「说过了」
+    val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(uiState.message) {
+        val message = uiState.message ?: return@LaunchedEffect
+        val result = snackbarHostState.showSnackbar(message, actionLabel = "重试")
+        viewModel.messageShown()
+        if (result == SnackbarResult.ActionPerformed) viewModel.refresh()
+    }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { TopAppBar(title = { Text("鳍味") }) }
+        topBar = { TopAppBar(title = { Text("鳍味") }) },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { innerPadding ->
-        // 懒列表：只组合、测量、绘制看得见的那几项；滑出去的项被回收，新滑进来的才组合
-        LazyColumn(modifier = Modifier.padding(innerPadding)) {
-            // 粘性标题：滑动时，搜索框和分类一直停在顶上
-            stickyHeader(key = "header", contentType = "header") {
-                Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-                    SearchBox(query = viewModel.query, onQueryChange = viewModel::onQueryChange)
-                    CategoryChips(selected = category, onSelect = { category = it })
-                    Text(
-                        text = "共 ${shown.size} 道",
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+        // 下拉刷新：手指往下拉，转圈，调用 refresh；列表本身一直在，不会被清空
+        PullToRefreshBox(
+            isRefreshing = uiState.refreshing,
+            onRefresh = viewModel::refresh,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            // 懒列表：只组合、测量、绘制看得见的那几项；滑出去的项被回收，新滑进来的才组合
+            LazyColumn {
+                // 粘性标题：滑动时，搜索框和分类一直停在顶上
+                stickyHeader(key = "header", contentType = "header") {
+                    Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
+                        SearchBox(query = viewModel.query, onQueryChange = viewModel::onQueryChange)
+                        CategoryChips(selected = category, onSelect = { category = it })
+                        Text(
+                            text = "共 ${shown.size} 道",
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                // key：每一项的身份是菜的 id，不是它排第几；contentType：同一种卡片才互相复用
+                items(shown, key = { it.id }, contentType = { "recipe" }) { recipe ->
+                    RecipeCard(
+                        recipe = recipe,
+                        liked = recipe.id in favoriteIds,
+                        onToggleLike = { viewModel.toggleFavorite(recipe) },
+                        onClick = { onOpenRecipe(recipe.id) },
+                        onHide = { hidden.add(recipe.id) }
                     )
                 }
-            }
-            // 刷新中：顶上一条细进度条；有话要说：一行提示 + 重试
-            if (uiState.refreshing) {
-                item(key = "refreshing") { LinearProgressIndicator(modifier = Modifier.fillMaxWidth()) }
-            }
-            uiState.message?.let { message ->
-                item(key = "message") { ErrorMessage(message = message, onRetry = viewModel::retry) }
-            }
-            // key：每一项的身份是菜的 id，不是它排第几；contentType：同一种卡片才互相复用
-            items(shown, key = { it.id }, contentType = { "recipe" }) { recipe ->
-                RecipeCard(
-                    recipe = recipe,
-                    liked = recipe.id in favoriteIds,
-                    onToggleLike = { viewModel.toggleFavorite(recipe) },
-                    onClick = { onOpenRecipe(recipe.id) },
-                    onHide = { hidden.add(recipe.id) }
-                )
             }
         }
     }

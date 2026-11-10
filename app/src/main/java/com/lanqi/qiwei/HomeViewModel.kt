@@ -71,7 +71,8 @@ class HomeViewModel(
         query = newQuery
     }
 
-    fun retry() {
+    /** 下拉刷新、提示条上的「重试」都调用它 */
+    fun refresh() {
         viewModelScope.launch { refresh(query) }
     }
 
