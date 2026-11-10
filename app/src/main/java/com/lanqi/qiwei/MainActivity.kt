@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
@@ -45,6 +46,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lanqi.qiwei.ui.theme.QiweiTheme
 
 class MainActivity : ComponentActivity() {
@@ -65,12 +68,13 @@ val allRecipes = generateRecipes(5000)
 /** 首页：搜索框 + 分类 + 菜谱列表。两个状态都放在首页这一层：状态往下传，事件往上传。 */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(onOpenRecipe: (Int) -> Unit) {
+fun HomeScreen(onOpenRecipe: (Int) -> Unit, viewModel: HomeViewModel = viewModel()) {
+    val recipes by viewModel.recipes.collectAsStateWithLifecycle()
     var query by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf("全部") }
     // 点了「不感兴趣」的菜
     val hidden = remember { mutableStateListOf<Int>() }
-    val shown = allRecipes.filter {
+    val shown = recipes.orEmpty().filter {
         it.id !in hidden && it.title.contains(query) && (category == "全部" || it.category == category)
     }
     Scaffold(
@@ -90,6 +94,14 @@ fun HomeScreen(onOpenRecipe: (Int) -> Unit) {
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                }
+            }
+            // 还在排序：转个圈
+            if (recipes == null) {
+                item(key = "loading") {
+                    Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
                 }
             }
             // key：每一项的身份是菜的 id，不是它排第几；contentType：同一种卡片才互相复用
