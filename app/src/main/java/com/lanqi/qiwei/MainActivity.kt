@@ -19,7 +19,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
@@ -30,7 +35,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -61,8 +68,10 @@ val allRecipes = generateRecipes(5000)
 fun HomeScreen() {
     var query by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf("全部") }
+    // 点了「不感兴趣」的菜
+    val hidden = remember { mutableStateListOf<Int>() }
     val shown = allRecipes.filter {
-        it.title.contains(query) && (category == "全部" || it.category == category)
+        it.id !in hidden && it.title.contains(query) && (category == "全部" || it.category == category)
     }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -75,7 +84,7 @@ fun HomeScreen() {
                 CategoryChips(selected = category, onSelect = { category = it })
             }
             items(shown) { recipe ->
-                RecipeCard(recipe = recipe)
+                RecipeCard(recipe = recipe, onHide = { hidden.add(recipe.id) })
             }
         }
     }
@@ -114,9 +123,11 @@ fun CategoryChips(selected: String, onSelect: (String) -> Unit, modifier: Modifi
 
 /** 一张菜谱卡片：拿到一道菜的数据，描述它长什么样。 */
 @Composable
-fun RecipeCard(recipe: Recipe, modifier: Modifier = Modifier) {
+fun RecipeCard(recipe: Recipe, onHide: () -> Unit, modifier: Modifier = Modifier) {
     // 份数的状态，提升到了卡片这一层
     var servings by rememberSaveable { mutableStateOf(2) }
+    // 收藏：先记在卡片里（第 13 期存进数据库）
+    var liked by remember { mutableStateOf(false) }
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
@@ -147,9 +158,21 @@ fun RecipeCard(recipe: Recipe, modifier: Modifier = Modifier) {
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
-                ServingsStepper(servings = servings, onServingsChange = { servings = it })
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    ServingsStepper(servings = servings, onServingsChange = { servings = it })
+                    TextButton(onClick = onHide) { Text("不感兴趣") }
+                }
             }
-            Text(text = "★ ${recipe.rating}", style = MaterialTheme.typography.labelLarge)
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "★ ${recipe.rating}", style = MaterialTheme.typography.labelLarge)
+                IconToggleButton(checked = liked, onCheckedChange = { liked = it }) {
+                    Icon(
+                        imageVector = if (liked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = if (liked) "取消收藏" else "收藏",
+                        tint = if (liked) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
         }
     }
 }
