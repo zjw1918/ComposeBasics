@@ -38,6 +38,10 @@ android {
     buildFeatures {
         compose = true
     }
+    // 单元测试跑在电脑的 JVM 上，没有真的 Android：Log.d 这类调用直接返回默认值，而不是抛异常
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 // Room 把数据库的结构导出成 JSON，存进 git：以后升级数据库时要用（进阶篇讲迁移）
@@ -76,6 +80,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
