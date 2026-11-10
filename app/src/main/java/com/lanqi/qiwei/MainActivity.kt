@@ -27,6 +27,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -108,7 +109,7 @@ fun RecipeCard(title: String, subtitle: String, meta: String, rating: String, mo
 /** 份数加减器：rememberSaveable 让状态在旋转屏幕（Activity 重建）之后也活下来。 */
 @Composable
 fun ServingsStepper() {
-    var portion by rememberSaveable { mutableStateOf(Portion(2, "人份")) }
+    var portion by rememberSaveable(stateSaver = PortionSaver) { mutableStateOf(Portion(2, "人份")) }
     Row(verticalAlignment = Alignment.CenterVertically) {
         TextButton(onClick = { if (portion.count > 1) portion = portion.copy(count = portion.count - 1) }) { Text("−") }
         Text(text = "${portion.count} ${portion.unit}", style = MaterialTheme.typography.bodyMedium)
@@ -118,6 +119,12 @@ fun ServingsStepper() {
 
 /** 份数 + 单位（“人份”“碗”“盘”）：一个自己写的类。 */
 data class Portion(val count: Int, val unit: String)
+
+/** 教 Bundle 怎么存 Portion：拆成两个它认识的值，取回来再装好。 */
+val PortionSaver = listSaver<Portion, Any>(
+    save = { listOf(it.count, it.unit) },
+    restore = { Portion(it[0] as Int, it[1] as String) }
+)
 
 @Preview(name = "浅色", showBackground = true)
 @Preview(name = "深色", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
