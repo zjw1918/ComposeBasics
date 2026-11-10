@@ -79,9 +79,18 @@ fun HomeScreen() {
     ) { innerPadding ->
         // 懒列表：只组合、测量、绘制看得见的那几项；滑出去的项被回收，新滑进来的才组合
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
-            item(key = "header", contentType = "header") {
-                SearchBox(query = query, onQueryChange = { query = it })
-                CategoryChips(selected = category, onSelect = { category = it })
+            // 粘性标题：滑动时，搜索框和分类一直停在顶上
+            stickyHeader(key = "header", contentType = "header") {
+                Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
+                    SearchBox(query = query, onQueryChange = { query = it })
+                    CategoryChips(selected = category, onSelect = { category = it })
+                    Text(
+                        text = "共 ${shown.size} 道",
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
             // key：每一项的身份是菜的 id，不是它排第几；contentType：同一种卡片才互相复用
             items(shown, key = { it.id }, contentType = { "recipe" }) { recipe ->
