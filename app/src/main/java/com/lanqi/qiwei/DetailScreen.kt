@@ -1,12 +1,15 @@
 package com.lanqi.qiwei
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -17,14 +20,36 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-/** 菜谱详情：凭 id 找到这道菜，列出食材和步骤。 */
-@OptIn(ExperimentalMaterial3Api::class)
+/** 菜谱详情：凭 id 去仓库取这道菜（要等一会儿），取到之前转圈。 */
 @Composable
 fun DetailScreen(recipeId: Int, onBack: () -> Unit) {
-    val recipe = allRecipes.first { it.id == recipeId }
+    // 翻车：加载结果放在 remember 里，加载放在 LaunchedEffect 里
+    var recipe by remember { mutableStateOf<Recipe?>(null) }
+    LaunchedEffect(recipeId) {
+        recipe = RecipeRepository.recipe(recipeId)
+    }
+    val loaded = recipe
+    if (loaded == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else {
+        RecipeDetail(recipe = loaded, onBack = onBack)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RecipeDetail(recipe: Recipe, onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
