@@ -1,5 +1,11 @@
 package com.lanqi.qiwei
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +30,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -67,6 +76,7 @@ fun RecipeDetail(
     onBack: () -> Unit,
 ) {
     val recipe = state.recipe
+    var stepsExpanded by rememberSaveable { mutableStateOf(true) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -116,12 +126,24 @@ fun RecipeDetail(
                     trailingContent = { Text(formatAmount(ingredient.amount) + " " + ingredient.unit) }
                 )
             }
-            item { SectionTitle("步骤") }
+            item {
+                // 点标题展开 / 收起步骤
+                Box(modifier = Modifier.clickable { stepsExpanded = !stepsExpanded }) {
+                    SectionTitle(if (stepsExpanded) "步骤 ▴" else "步骤（${recipe.steps.size} 步）▾")
+                }
+            }
             itemsIndexed(recipe.steps) { index, step ->
-                ListItem(
-                    leadingContent = { Text("${index + 1}", style = MaterialTheme.typography.titleLarge) },
-                    headlineContent = { Text(step) }
-                )
+                // AnimatedVisibility：visible 从 true 变 false，内容收起来（高度动画 + 淡出），反过来就展开
+                AnimatedVisibility(
+                    visible = stepsExpanded,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut()
+                ) {
+                    ListItem(
+                        leadingContent = { Text("${index + 1}", style = MaterialTheme.typography.titleLarge) },
+                        headlineContent = { Text(step) }
+                    )
+                }
             }
         }
     }

@@ -5,6 +5,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -244,7 +250,18 @@ fun RecipeCard(
 fun ServingsStepper(servings: Int, onServingsChange: (Int) -> Unit, modifier: Modifier = Modifier) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         TextButton(onClick = { if (servings > 1) onServingsChange(servings - 1) }) { Text("−") }
-        Text(text = "$servings 人份", style = MaterialTheme.typography.bodyMedium)
+        // 数字换了：旧数字滑出去，新数字滑进来。加的时候往上滑，减的时候往下滑
+        AnimatedContent(
+            targetState = servings,
+            transitionSpec = {
+                val up = targetState > initialState
+                (slideInVertically { h -> if (up) h else -h } + fadeIn()) togetherWith
+                    (slideOutVertically { h -> if (up) -h else h } + fadeOut())
+            },
+            label = "份数"
+        ) { n ->
+            Text(text = "$n 人份", style = MaterialTheme.typography.bodyMedium)
+        }
         TextButton(onClick = { onServingsChange(servings + 1) }) { Text("+") }
     }
 }
