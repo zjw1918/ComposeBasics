@@ -36,13 +36,18 @@ fun DetailScreen(viewModel: RecipeDetailViewModel, onBack: () -> Unit) {
         DetailUiState.Loading -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
-        is DetailUiState.Success -> RecipeDetail(recipe = state.recipe, onBack = onBack)
+        is DetailUiState.Success -> RecipeDetail(
+            state = state,
+            onServingsChange = viewModel::setServings,
+            onBack = onBack
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecipeDetail(recipe: Recipe, onBack: () -> Unit) {
+fun RecipeDetail(state: DetailUiState.Success, onServingsChange: (Int) -> Unit, onBack: () -> Unit) {
+    val recipe = state.recipe
     Scaffold(
         topBar = {
             TopAppBar(
@@ -65,9 +70,14 @@ fun RecipeDetail(recipe: Recipe, onBack: () -> Unit) {
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
-                SectionTitle("食材（两人份）")
+                SectionTitle("食材")
+                ServingsStepper(
+                    servings = state.servings,
+                    onServingsChange = onServingsChange,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
             }
-            items(recipe.ingredients) { ingredient ->
+            items(state.ingredients) { ingredient ->
                 ListItem(
                     headlineContent = { Text(ingredient.name) },
                     trailingContent = { Text(formatAmount(ingredient.amount) + " " + ingredient.unit) }

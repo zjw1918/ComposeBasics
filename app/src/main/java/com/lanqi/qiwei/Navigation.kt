@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -96,7 +97,7 @@ fun QiweiNavigation() {
                 }
                 entry<Detail> { key ->
                     // 每个详情页条目一个 ViewModel：条目在返回栈里，它就在；条目被弹出，它才下班
-                    val viewModel = viewModel { RecipeDetailViewModel(key.recipeId) }
+                    val viewModel = viewModel { RecipeDetailViewModel(key.recipeId, createSavedStateHandle()) }
                     DetailScreen(viewModel = viewModel, onBack = { backStack.removeLastOrNull() })
                 }
                 entry<Favorites> { FavoritesScreen() }
