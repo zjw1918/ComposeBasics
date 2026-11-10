@@ -20,30 +20,23 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-/** 菜谱详情：凭 id 去仓库取这道菜（要等一会儿），取到之前转圈。 */
+/** 菜谱详情：只管显示 ViewModel 给的状态。数据从哪来、等多久，它不知道。 */
 @Composable
-fun DetailScreen(recipeId: Int, onBack: () -> Unit) {
-    // 翻车：加载结果放在 remember 里，加载放在 LaunchedEffect 里
-    var recipe by remember { mutableStateOf<Recipe?>(null) }
-    LaunchedEffect(recipeId) {
-        recipe = RecipeRepository.recipe(recipeId)
-    }
-    val loaded = recipe
-    if (loaded == null) {
+fun DetailScreen(viewModel: RecipeDetailViewModel, onBack: () -> Unit) {
+    val uiState by viewModel.uiState.collectAsState()
+    val recipe = uiState.recipe
+    if (uiState.loading || recipe == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
     } else {
-        RecipeDetail(recipe = loaded, onBack = onBack)
+        RecipeDetail(recipe = recipe, onBack = onBack)
     }
 }
 

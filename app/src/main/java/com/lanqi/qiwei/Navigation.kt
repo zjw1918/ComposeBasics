@@ -22,7 +22,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import kotlinx.serialization.Serializable
@@ -82,12 +85,19 @@ fun QiweiNavigation() {
                 .padding(bottom = innerPadding.calculateBottomPadding())
                 .consumeWindowInsets(WindowInsets.navigationBars),
             onBack = { backStack.removeLastOrNull() },
+            // 让每个条目有自己的 rememberSaveable 存储和 ViewModel 存储
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator(),
+            ),
             entryProvider = entryProvider {
                 entry<Home> {
                     HomeScreen(onOpenRecipe = { id -> backStack.add(Detail(id)) })
                 }
                 entry<Detail> { key ->
-                    DetailScreen(recipeId = key.recipeId, onBack = { backStack.removeLastOrNull() })
+                    // 每个详情页条目一个 ViewModel：条目在返回栈里，它就在；条目被弹出，它才下班
+                    val viewModel = viewModel { RecipeDetailViewModel(key.recipeId) }
+                    DetailScreen(viewModel = viewModel, onBack = { backStack.removeLastOrNull() })
                 }
                 entry<Favorites> { FavoritesScreen() }
                 entry<Mine> { MineScreen() }
