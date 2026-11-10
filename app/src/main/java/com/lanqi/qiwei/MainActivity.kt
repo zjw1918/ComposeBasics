@@ -20,14 +20,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
@@ -237,13 +232,7 @@ fun RecipeCard(
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = "★ ${recipe.rating}", style = MaterialTheme.typography.labelLarge)
-                IconToggleButton(checked = liked, onCheckedChange = { onToggleLike() }) {
-                    Icon(
-                        imageVector = if (liked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                        contentDescription = if (liked) "取消收藏" else "收藏",
-                        tint = if (liked) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                FavoriteButton(liked = liked, onToggle = onToggleLike)
             }
         }
     }
