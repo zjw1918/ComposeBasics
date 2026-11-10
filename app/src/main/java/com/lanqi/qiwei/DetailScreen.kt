@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,7 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 /** 菜谱详情：只管显示 ViewModel 给的状态。数据从哪来、等多久，它不知道。 */
 @Composable
-fun DetailScreen(viewModel: RecipeDetailViewModel, onBack: () -> Unit) {
+fun DetailScreen(viewModel: RecipeDetailViewModel, onCook: () -> Unit, onBack: () -> Unit) {
     // 带生命周期地收集：App 退到后台就停止收集，回到前台再接着收
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     // sealed interface：when 必须把每一种状态都处理到，漏了编译不过
@@ -39,6 +40,7 @@ fun DetailScreen(viewModel: RecipeDetailViewModel, onBack: () -> Unit) {
         is DetailUiState.Success -> RecipeDetail(
             state = state,
             onServingsChange = viewModel::setServings,
+            onCook = onCook,
             onBack = onBack
         )
     }
@@ -46,7 +48,12 @@ fun DetailScreen(viewModel: RecipeDetailViewModel, onBack: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecipeDetail(state: DetailUiState.Success, onServingsChange: (Int) -> Unit, onBack: () -> Unit) {
+fun RecipeDetail(
+    state: DetailUiState.Success,
+    onServingsChange: (Int) -> Unit,
+    onCook: () -> Unit,
+    onBack: () -> Unit,
+) {
     val recipe = state.recipe
     Scaffold(
         topBar = {
@@ -58,6 +65,9 @@ fun RecipeDetail(state: DetailUiState.Success, onServingsChange: (Int) -> Unit, 
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(onClick = onCook) { Text("开始做饭") }
         }
     ) { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {

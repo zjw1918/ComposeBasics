@@ -40,6 +40,9 @@ data object Home : NavKey
 data class Detail(val recipeId: Int) : NavKey
 
 @Serializable
+data class Cook(val recipeId: Int) : NavKey
+
+@Serializable
 data object Favorites : NavKey
 
 @Serializable
@@ -98,7 +101,17 @@ fun QiweiNavigation() {
                 entry<Detail> { key ->
                     // 每个详情页条目一个 ViewModel：条目在返回栈里，它就在；条目被弹出，它才下班
                     val viewModel = viewModel { RecipeDetailViewModel(key.recipeId, createSavedStateHandle()) }
-                    DetailScreen(viewModel = viewModel, onBack = { backStack.removeLastOrNull() })
+                    DetailScreen(
+                        viewModel = viewModel,
+                        onCook = { backStack.add(Cook(key.recipeId)) },
+                        onBack = { backStack.removeLastOrNull() }
+                    )
+                }
+                entry<Cook> { key ->
+                    CookModeScreen(
+                        recipe = allRecipes.first { it.id == key.recipeId },
+                        onClose = { backStack.removeLastOrNull() }
+                    )
                 }
                 entry<Favorites> { FavoritesScreen() }
                 entry<Mine> { MineScreen() }
