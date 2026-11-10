@@ -3,6 +3,8 @@ package com.lanqi.qiwei
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -24,8 +26,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 
 /** 菜谱详情：只管显示 ViewModel 给的状态。数据从哪来、等多久，它不知道。 */
 @Composable
@@ -75,6 +79,14 @@ fun RecipeDetail(
     ) { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
             item {
+                AsyncImage(
+                    model = recipe.imageUrl,
+                    contentDescription = recipe.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp)
+                )
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(recipe.subtitle, style = MaterialTheme.typography.bodyLarge)
                     Text(

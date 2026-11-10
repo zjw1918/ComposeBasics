@@ -45,6 +45,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import coil3.compose.AsyncImage
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -180,8 +182,11 @@ fun RecipeCard(recipe: Recipe, onClick: () -> Unit, onHide: () -> Unit, modifier
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // 盘子：先用一个圆形色块占位，第 11 期换成真图片
-            Box(
+            // 盘子：Coil 在后台下载、解码、缓存图片，到了再显示；没到之前是底色
+            AsyncImage(
+                model = recipe.imageUrl,
+                contentDescription = null,  // 装饰性的图：菜名就在旁边，读屏软件不用再念一遍
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(64.dp)
                     .clip(CircleShape)
