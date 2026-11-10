@@ -5,6 +5,8 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.room3.Room
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -41,6 +43,13 @@ class AppContainer(context: Context) {
     val recipeRepository = RecipeRepository(retrofit.create<QiweiApi>())
 
     val settingsRepository = SettingsRepository(context)
+
+    // 数据库文件：/data/data/com.lanqi.qiwei/databases/qiwei.db
+    private val database = Room.databaseBuilder<QiweiDatabase>(context, "qiwei.db")
+        .setDriver(BundledSQLiteDriver())
+        .build()
+
+    val favoritesRepository = FavoritesRepository(database.favoriteDao())
 }
 
 /** App 一启动就创建的 Application 对象：容器挂在它身上，整个 App 只有一份。 */

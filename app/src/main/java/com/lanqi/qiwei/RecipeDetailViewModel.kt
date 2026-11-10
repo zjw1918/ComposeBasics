@@ -6,7 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -27,12 +29,22 @@ sealed interface DetailUiState {
 class RecipeDetailViewModel(
     private val recipeId: Int,
     private val repository: RecipeRepository,
+    private val favorites: FavoritesRepository,
     // SavedStateHandle：系统帮忙保管的一小块状态，App 在后台被杀掉再回来，也还在
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     // 可以改的那份只在自己手里；交给界面的是只读的
     private val _uiState = MutableStateFlow<DetailUiState>(DetailUiState.Loading)
     val uiState: StateFlow<DetailUiState> = _uiState.asStateFlow()
+
+    /** 这道菜收藏了没有：直接来自数据库的 Flow */
+    val isFavorite: StateFlow<Boolean> = favorites.isFavorite(recipeId)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    fun toggleFavorite() {
+        val state = uiState.value as? DetailUiState.Success ?: return
+        viewModelScope.launch { favorites.setFavorite(state.recipe, !isFavorite.value) }
+    }
 
     init {
         Log.d("Qiwei", "详情 ViewModel 上班：菜 #$recipeId")

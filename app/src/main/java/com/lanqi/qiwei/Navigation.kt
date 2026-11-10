@@ -108,7 +108,9 @@ fun QiweiNavigation() {
                 entry<Detail> { key ->
                     // 每个详情页条目一个 ViewModel：条目在返回栈里，它就在；条目被弹出，它才下班
                     val viewModel = viewModel {
-                        RecipeDetailViewModel(key.recipeId, container.recipeRepository, createSavedStateHandle())
+                        RecipeDetailViewModel(
+                            key.recipeId, container.recipeRepository, container.favoritesRepository, createSavedStateHandle()
+                        )
                     }
                     DetailScreen(
                         viewModel = viewModel,

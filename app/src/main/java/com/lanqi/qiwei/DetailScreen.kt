@@ -11,12 +11,15 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -36,6 +39,7 @@ import coil3.compose.AsyncImage
 fun DetailScreen(viewModel: RecipeDetailViewModel, onCook: () -> Unit, onBack: () -> Unit) {
     // 带生命周期地收集：App 退到后台就停止收集，回到前台再接着收
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val isFavorite by viewModel.isFavorite.collectAsStateWithLifecycle()
     // sealed interface：when 必须把每一种状态都处理到，漏了编译不过
     when (val state = uiState) {
         DetailUiState.Loading -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -46,6 +50,8 @@ fun DetailScreen(viewModel: RecipeDetailViewModel, onCook: () -> Unit, onBack: (
         }
         is DetailUiState.Success -> RecipeDetail(
             state = state,
+            isFavorite = isFavorite,
+            onToggleFavorite = viewModel::toggleFavorite,
             onServingsChange = viewModel::setServings,
             onCook = onCook,
             onBack = onBack
@@ -57,6 +63,8 @@ fun DetailScreen(viewModel: RecipeDetailViewModel, onCook: () -> Unit, onBack: (
 @Composable
 fun RecipeDetail(
     state: DetailUiState.Success,
+    isFavorite: Boolean,
+    onToggleFavorite: () -> Unit,
     onServingsChange: (Int) -> Unit,
     onCook: () -> Unit,
     onBack: () -> Unit,
@@ -69,6 +77,15 @@ fun RecipeDetail(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
+                    }
+                },
+                actions = {
+                    IconToggleButton(checked = isFavorite, onCheckedChange = { onToggleFavorite() }) {
+                        Icon(
+                            imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                            contentDescription = if (isFavorite) "取消收藏" else "收藏",
+                            tint = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             )
