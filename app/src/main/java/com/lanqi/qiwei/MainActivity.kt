@@ -66,7 +66,7 @@ fun HomeScreen() {
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
         ) {
-            SearchBox(query = query, onQueryChange = { query = it })
+            SearchBox(query = query, onQueryChange = { /* 忘了写 query = it */ })
             shown.forEach { recipe ->
                 RecipeCard(recipe = recipe)
             }
