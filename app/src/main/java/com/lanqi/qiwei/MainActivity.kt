@@ -52,13 +52,16 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/** 5000 道菜（示例数据，第 11 期换成从后端取）。 */
+val allRecipes = generateRecipes(5000)
+
 /** 首页：搜索框 + 分类 + 菜谱列表。两个状态都放在首页这一层：状态往下传，事件往上传。 */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
     var query by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf("全部") }
-    val shown = sampleRecipes.filter {
+    val shown = allRecipes.filter {
         it.title.contains(query) && (category == "全部" || it.category == category)
     }
     Scaffold(
