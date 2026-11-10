@@ -16,7 +16,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -77,25 +82,44 @@ fun HomeScreen() {
         modifier = Modifier.fillMaxSize(),
         topBar = { TopAppBar(title = { Text("鳍味") }) }
     ) { innerPadding ->
-        // 懒列表：只组合、测量、绘制看得见的那几项；滑出去的项被回收，新滑进来的才组合
-        LazyColumn(modifier = Modifier.padding(innerPadding)) {
-            // 粘性标题：滑动时，搜索框和分类一直停在顶上
-            stickyHeader(key = "header", contentType = "header") {
-                Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
+        // 实验：同一份数据，换成两列网格。item / items 的写法和 LazyColumn 一模一样
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier.padding(innerPadding),
+            contentPadding = PaddingValues(8.dp),
+        ) {
+            item(key = "header", span = { GridItemSpan(maxLineSpan) }) {
+                Column {
                     SearchBox(query = query, onQueryChange = { query = it })
                     CategoryChips(selected = category, onSelect = { category = it })
-                    Text(
-                        text = "共 ${shown.size} 道",
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
                 }
             }
-            // key：每一项的身份是菜的 id，不是它排第几；contentType：同一种卡片才互相复用
-            items(shown, key = { it.id }, contentType = { "recipe" }) { recipe ->
-                RecipeCard(recipe = recipe, onHide = { hidden.add(recipe.id) })
+            items(shown, key = { it.id }) { recipe ->
+                RecipeTile(recipe = recipe)
             }
+        }
+    }
+}
+
+/** 网格里的一格：竖着排的小卡片。 */
+@Composable
+fun RecipeTile(recipe: Recipe, modifier: Modifier = Modifier) {
+    ElevatedCard(modifier = modifier.padding(6.dp)) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(96.dp)
+                    .clip(MaterialTheme.shapes.medium)
+                    .background(MaterialTheme.colorScheme.secondaryContainer)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = recipe.title, style = MaterialTheme.typography.titleMedium, maxLines = 1)
+            Text(
+                text = "${recipe.minutes} 分钟 · ★ ${recipe.rating}",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
