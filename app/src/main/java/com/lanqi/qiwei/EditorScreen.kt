@@ -4,12 +4,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -53,6 +55,8 @@ fun EditorScreen(viewModel: EditorViewModel, isNew: Boolean, onDone: () -> Unit)
                 value = form.title,
                 onValueChange = { viewModel.onFormChange(form.copy(title = it)) },
                 label = { Text("菜名") },
+                isError = viewModel.titleError != null,
+                supportingText = { viewModel.titleError?.let { Text(it) } },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -78,7 +82,11 @@ fun EditorScreen(viewModel: EditorViewModel, isNew: Boolean, onDone: () -> Unit)
                 minLines = 3,
                 modifier = Modifier.fillMaxWidth()
             )
-            Button(onClick = viewModel::save, modifier = Modifier.fillMaxWidth()) { Text("保存") }
+            // 保存中：按钮不能再点，换成转圈
+            Button(onClick = viewModel::save, enabled = !viewModel.saving, modifier = Modifier.fillMaxWidth()) {
+                if (viewModel.saving) CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                else Text("保存")
+            }
         }
     }
 }

@@ -20,6 +20,14 @@ class EditorViewModel(private val recipeId: Long?, private val repository: MyRec
     var form by mutableStateOf(EditorForm())
         private set
 
+    /** 正在保存：按钮变灰，再点也没用 */
+    var saving by mutableStateOf(false)
+        private set
+
+    /** 菜名的错误提示；null = 没问题 */
+    var titleError by mutableStateOf<String?>(null)
+        private set
+
     /** 保存完了：界面看到它变成 true，就返回上一页 */
     var saved by mutableStateOf(false)
         private set
@@ -34,22 +42,33 @@ class EditorViewModel(private val recipeId: Long?, private val repository: MyRec
     }
 
     fun onFormChange(newForm: EditorForm) {
+        if (newForm.title != form.title) titleError = null
         form = newForm
     }
 
     fun save() {
+        if (saving) return  // 已经在存了：第二下点击直接忽略
+        if (form.title.isBlank()) {
+            titleError = "菜名不能为空"
+            return
+        }
+        saving = true
         viewModelScope.launch {
-            repository.save(
-                MyRecipeEntity(
-                    id = recipeId ?: 0,
-                    title = form.title.trim(),
-                    minutes = form.minutes.toIntOrNull() ?: 0,
-                    ingredients = form.ingredients.trim(),
-                    steps = form.steps.trim(),
-                    updatedAt = 0,
+            try {
+                repository.save(
+                    MyRecipeEntity(
+                        id = recipeId ?: 0,
+                        title = form.title.trim(),
+                        minutes = form.minutes.toIntOrNull() ?: 0,
+                        ingredients = form.ingredients.trim(),
+                        steps = form.steps.trim(),
+                        updatedAt = 0,
+                    )
                 )
-            )
-            saved = true
+                saved = true
+            } finally {
+                saving = false
+            }
         }
     }
 }
