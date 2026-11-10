@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -47,7 +46,8 @@ class HomeViewModel @Inject constructor(
     var query by mutableStateOf("")
         private set
 
-    private val searchTerm = snapshotFlow { query }.debounce(300).distinctUntilChanged()
+    // 实验：有人「顺手」把 debounce(300) 删掉了
+    private val searchTerm = snapshotFlow { query }.distinctUntilChanged()
     private val refreshing = MutableStateFlow(false)
     private val message = MutableStateFlow<String?>(null)
 
