@@ -16,9 +16,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -68,14 +68,13 @@ fun HomeScreen() {
         modifier = Modifier.fillMaxSize(),
         topBar = { TopAppBar(title = { Text("鳍味") }) }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-        ) {
-            SearchBox(query = query, onQueryChange = { query = it })
-            CategoryChips(selected = category, onSelect = { category = it })
-            shown.forEach { recipe ->
+        // 懒列表：只组合、测量、绘制看得见的那几项；滑出去的项被回收，新滑进来的才组合
+        LazyColumn(modifier = Modifier.padding(innerPadding)) {
+            item {
+                SearchBox(query = query, onQueryChange = { query = it })
+                CategoryChips(selected = category, onSelect = { category = it })
+            }
+            items(shown) { recipe ->
                 RecipeCard(recipe = recipe)
             }
         }
