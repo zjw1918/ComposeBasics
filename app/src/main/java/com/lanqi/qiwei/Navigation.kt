@@ -48,6 +48,9 @@ data object Favorites : NavKey
 @Serializable
 data object Mine : NavKey
 
+@Serializable
+data object Settings : NavKey
+
 /** 底部的三个标签。每个标签有自己的根页面。 */
 enum class Tab(val label: String, val icon: ImageVector, val root: NavKey) {
     HOME("首页", Icons.Filled.Home, Home),
@@ -118,7 +121,10 @@ fun QiweiNavigation() {
                     CookModeScreen(viewModel = viewModel, onClose = { backStack.removeLastOrNull() })
                 }
                 entry<Favorites> { FavoritesScreen() }
-                entry<Mine> { MineScreen() }
+                entry<Mine> { MineScreen(onOpenSettings = { backStack.add(Settings) }) }
+                entry<Settings> {
+                    SettingsScreen(settings = container.settingsRepository, onBack = { backStack.removeLastOrNull() })
+                }
             }
         )
     }

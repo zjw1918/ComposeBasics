@@ -1,6 +1,7 @@
 package com.lanqi.qiwei
 
 import android.app.Application
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -22,7 +23,7 @@ const val BASE_URL = "http://localhost:8080/"
  * 手动依赖注入：整个 App 共用的对象，在这里各创建一次。
  * 谁需要仓库，就从这里拿，而不是自己 new 一个。第 17 期换成 Hilt。
  */
-class AppContainer {
+class AppContainer(context: Context) {
     private val json = Json { ignoreUnknownKeys = true }
 
     // OkHttp：真正收发 HTTP 的那一层。日志拦截器把每个请求打印到 Logcat
@@ -38,11 +39,13 @@ class AppContainer {
         .build()
 
     val recipeRepository = RecipeRepository(retrofit.create<QiweiApi>())
+
+    val settingsRepository = SettingsRepository(context)
 }
 
 /** App 一启动就创建的 Application 对象：容器挂在它身上，整个 App 只有一份。 */
 class QiweiApplication : Application() {
-    val container by lazy { AppContainer() }
+    val container by lazy { AppContainer(this) }
 }
 
 /** 在 Composable 里拿到容器。 */
