@@ -56,8 +56,8 @@ git checkout main            # 回到最终版
 | 06 | [五千道菜，一块屏幕](https://www.bilibili.com/video/BV1ogWy62EKw) | 懒列表：`key`、`contentType`、粘性标题 | `b06` |
 | 07 | [返回栈只是一个列表](https://www.bilibili.com/video/BV14pWQ6QE33) | Navigation 3：返回栈、详情页、底部三个标签 | `b07` |
 | 08 | [值班经理不下班](https://www.bilibili.com/video/BV1XoW96TEq2) | ViewModel、`StateFlow`、`UiState`、`SavedStateHandle` | `b08` |
-| 09 | suspend 不是「去后台」 | 协程：`suspend`、`delay`、`withContext(Dispatchers.Default)` | `b09` |
-| 10 | 主厨一声收工 | 结构化并发与取消：`Job`、`viewModelScope`、`LaunchedEffect` | `b10` |
+| 09 | [suspend 不是「去后台」](https://www.bilibili.com/video/BV11mWX6WEby) | 协程：`suspend`、`delay`、`withContext(Dispatchers.Default)` | `b09` |
+| 10 | [主厨一声收工](https://www.bilibili.com/video/BV1DrWR6KEme) | 结构化并发与取消：`Job`、`viewModelScope`、`LaunchedEffect` | `b10` |
 | 11 | 去鱼市进货 | 网络：Retrofit、OkHttp、kotlinx.serialization、Coil；加载 / 出错 / 重试 | `b11` |
 | 12 | 传送带 | Flow：`debounce`、`flatMapLatest`、`stateIn`，边打字边搜 | `b12` |
 | 13 | 冷库 | DataStore 设置、Room 3 收藏 | `b13` |
