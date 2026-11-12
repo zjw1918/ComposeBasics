@@ -74,9 +74,10 @@ git checkout main            # 回到最终版
 需要：Android Studio（AGP 9.5、Kotlin 2.4.21，JDK 用 Studio 自带的就行），一台 Android 7.0（API 24）以上的手机或模拟器。
 
 1. 用 Android Studio 打开仓库根目录，等 Gradle 同步完，运行 `app`。
-2. **第 11 期起**，App 要连「鳍味后端」（仓库里的 `server/`，Ktor 写的独立 Gradle 构建，说明见 [server/README.md](server/README.md)）：
+2. **第 11 期起**，App 要连「鳍味后端」：一个单独的小服务器，在 [qiwei-server](https://github.com/zjw1918/qiwei-server) 仓库。
+   到它的 [Releases](https://github.com/zjw1918/qiwei-server/releases) 下载对应系统的压缩包，解压后运行（不用装 Java）：
    ```bash
-   ./gradlew -p server run          # 在仓库根目录运行，启动后端（8080 端口）
+   ./qiwei-server                   # 启动后端（8080 端口）；Windows：qiwei-server.exe
    adb reverse tcp:8080 tcp:8080    # 把手机 / 模拟器的 8080 端口接到电脑上
    ```
    浏览器打开 http://localhost:8080 是后端的故障控制台：调延迟、调错误率、直接让它挂掉，视频里用它演示慢网、出错和离线。
@@ -95,7 +96,6 @@ app/src/main/java/com/lanqi/qiwei/
 ├── model/             Recipe、Ingredient
 ├── di/                Hilt 登记表
 └── ui/                主题、共用组件
-server/                鳍味后端（Ktor）
 ```
 
 ## 许可
