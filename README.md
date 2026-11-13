@@ -59,7 +59,7 @@ git checkout main            # 回到最终版
 | 09 | [suspend 不是「去后台」](https://www.bilibili.com/video/BV11mWX6WEby) | 协程：`suspend`、`delay`、`withContext(Dispatchers.Default)` | `b09` |
 | 10 | [主厨一声收工](https://www.bilibili.com/video/BV1DrWR6KEme) | 结构化并发与取消：`Job`、`viewModelScope`、`LaunchedEffect` | `b10` |
 | 11 | [去鱼市进货](https://www.bilibili.com/video/BV1wsWo6dEwF) | 网络：Retrofit、OkHttp、kotlinx.serialization、Coil；加载 / 出错 / 重试 | `b11` |
-| 12 | 传送带 | Flow：`debounce`、`flatMapLatest`、`stateIn`，边打字边搜 | `b12` |
+| 12 | [传送带](https://www.bilibili.com/video/BV1QTWB6sEpD) | Flow：`debounce`、`flatMapLatest`、`stateIn`，边打字边搜 | `b12` |
 | 13 | 冷库 | DataStore 设置、Room 3 收藏 | `b13` |
 | 14 | 冷库才是唯一的真相 | 离线优先：界面只读数据库、下拉刷新 | `b14` |
 | 15 | 我的菜谱 | 增删改查、表单校验、撤销 | `b15` |
