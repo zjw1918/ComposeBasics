@@ -62,7 +62,7 @@ git checkout main            # 回到最终版
 | 12 | [传送带](https://www.bilibili.com/video/BV1QTWB6sEpD) | Flow：`debounce`、`flatMapLatest`、`stateIn`，边打字边搜 | `b12` |
 | 13 | [冷库](https://www.bilibili.com/video/BV1oZWq6hEff) | DataStore 设置、Room 3 收藏 | `b13` |
 | 14 | [冷库才是唯一的真相](https://www.bilibili.com/video/BV1WUsw6yEHw) | 离线优先：界面只读数据库、下拉刷新 | `b14` |
-| 15 | 我的菜谱 | 增删改查、表单校验、撤销 | `b15` |
+| 15 | [我的菜谱](https://www.bilibili.com/video/BV1bBsw6HE8W) | 增删改查、表单校验、撤销 | `b15` |
 | 16 | 让它活过来 | 动画：`animate*AsState`、`AnimatedVisibility`、`AnimatedContent`、滑动删除、页面转场 | `b16` |
 | 17 | 请人来帮忙 | 按功能分包、Hilt、第一个单元测试 | `b17` |
 | 18 | 鳍味 1.0 | 发布版：R8、签名 | `b18` |
