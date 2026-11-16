@@ -65,7 +65,7 @@ git checkout main            # 回到最终版
 | 15 | [我的菜谱](https://www.bilibili.com/video/BV1bBsw6HE8W) | 增删改查、表单校验、撤销 | `b15` |
 | 16 | [让它活过来](https://www.bilibili.com/video/BV1kgsw66EJQ) | 动画：`animate*AsState`、`AnimatedVisibility`、`AnimatedContent`、滑动删除、页面转场 | `b16` |
 | 17 | [请人来帮忙](https://www.bilibili.com/video/BV158sP6iEQQ) | 按功能分包、Hilt、第一个单元测试 | `b17` |
-| 18 | 鳍味 1.0 | 发布版：R8、签名 | `b18` |
+| 18 | [鳍味 1.0](https://www.bilibili.com/video/BV1aBsP6FEPj) | 发布版：R8、签名 | `b18` |
 
 没有链接的几期视频还在陆续更新，代码已经全部写好。
 
